@@ -1,0 +1,84 @@
+#+TITLE: 20 04 2021 - Teorica
+* Recursos computacionales
+- Utilizacion de Memoria
+- Utilizacion de ancho de banda en las comunicaciones
+- Utilizacion de hardware de la computadora
+- El tiempo de computo o tiempo computacional
+** Que medimos ?
+- Tiempo
+- Espacio (memoria)
+* Notaciones
+- T(n) es el tiempo de ejecucion de un algoritmo para una entrada de tamaño n
+- Teoricamente T(n) debe indicar el numero de instrucciones ejecutadas por una computadora idealizada
+- La complejidad (o costo) de un algoritmo es una medida de la cantidad de recursos (Tiempo, memoria) que el algoritmo necesita
+- Segun como ingresa los datos al algoritmo, el rendimiento del mismo varia
+* Un poco de matematica
+** Principio de invarianza
+- Dado un lagoritmo y dor implementaciones I1 y I2 (Maquinas distintas o codigo distintos) que tarda T1(n) y T2(n) respectivamente, el principio de invarianza afirma que existe una constante real c0 y un numero natural n0 tales que para todo n >= n0 se verifica que T1(n)<=cT2(n)
+- Es decir, el tiempo de ejecucion de dor implementaciones distintas de un algoritmo dado no va a diferir mas que en una constante multiplicativa
+* Analisis de algoritmos
+- En realidad el analisis necesario para realizar una estimacion de los recursos consumidos pro un algoritmo es un tema mas teorico que practico
+- Herramientas -> la notacion Bachmann-Landau o notacion asintotica
+- En este caso se defina como fnciones cuyo dominio es el conjunto de los numeros naturales N = 1,2,3,...
+- Esta notacion es comunmente conocida como notacio de O grande (big O notation ), O()
+* Big O
+- La notacion O-grande, es una notacion matematica que describe el comportamiento de una funcion en el limite, es decir, cuando el argumento tiende hacia un valor particular o infinito
+- La notacion O-grande caracteriza a las funciones segun su tasa de crecimiento
+- La letra O -> tasa de crecimiento de la funcion -> el Orden de la Funcion
+- La descripcion de una funcion en terminos de notacion O-grande unicamente provee un limite superio sobre la tasa de crecimiento de la misma
+- Si un tiempo de ejecucion es O(f(n)), entonces para un n lo suficientemente grande, el tiempo de ejecucion es como mucho k.f(n) para alguna constante k dada
+- Se dice que el tiempo de ejecucion (T(n)) es "O grande de f(n)" o simplemente "O de f(n)"
+- Sea T(n) el timpo de ejecucion en funcion del Tamaño del problema
+- Ejemplo:
+Esta funcion, T(n), puede calcularse sobre el codigo del algoritmo, contando las instrucciones a ejecutar y multiplicando por el tiempo requerdio por cada instruccion:
+#+begin_src C
+instruccion1;
+for (i=0;i<n;i++) instruccion2;
+#+end_src
+entonces el timpo de ejecucion T(N) seria:
+T(N) = t1 + t2 * N
+En la realidad:
+Tmin(N)<=T(N)<=Tmax(N)
+donde:
+ - Tmin(N) es conocido como el mejor de los casos, tiempo minimo de ejecucion
+ - Tmax(N) es conocido como el peor de los casos, tiempo maximo de ejecucion
+* Big-Omega
+Definicion
+T(N) = Omeda(g(N)) si exite una constante positiva c y un n0 tal que
+T(N) >= cg(N) donde N >= n0
+- Cota inferior
+* Big-Theta
+Acota el tiempo de ejecucion por abajo y por arriba
+Te da el big-O y big-Omega
+Es un conjunto de funciones
+* Limites asintoticos
+|-----------+---------------------|
+| Funcion   | Nombre              |
+|-----------+---------------------|
+| c         | Constante           |
+| logn      | Logaritmico         |
+| log2n     | Logaritmico base 2  |
+| n         | Lineal              |
+| nlogn     | Logaritmico iterado |
+| n²        | Cuadratica          |
+| n³        | Cubica              |
+| 2^n       | Exponencial         |
+| log(logn) | log Logaritmica     |
+| n!        | Factorial           |
+|-----------+---------------------|
+* Modelo Computacional
+- Para poder analizar un algoritmo en un marco de *trabajo formal* (fromal framework), es necesario establecer un *modelo computacional*
+- El recurso mas importate que se mide normalmente es el tiempo
+- Existen muchos factore que alteran el tiempo de ejecucion de un programa, los mas importantes:
+  + El algoritmo
+  + El set de datos
+** Calcular tiempo de ejecucion
+- Determinar todas las instrucciones que han sido ejecutadas y multiplicarlas por el tiempo de ejecucion de una instruccion
+- Determinar cuales instrucciones son ejecutables y cuales no
+- Existen ciertas reglas para ayudar esta constabilidad
+*** Reglas
+* Teorema Maestro
+T(n) = aT(n/b) + f(n)
+a - la cantidad de llamadas recursivas
+b - por cuanto se particiona la cantidad de informacion
+n - cantidad de informacion

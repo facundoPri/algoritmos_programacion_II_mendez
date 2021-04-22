@@ -1,0 +1,142 @@
+#+TITLE: Clase Repaso
+* Python vs C
+** C
+- Tipado estatico
+- Declaracion de variables e inicializacion
+- Funciones y procedimientos
+- Lenguaje Compilado
+** Python
+- Tipado dinamico
+- Lenguaje interpretado
+* Tipos de datos
+- char (1 byte)
+- int (4 bytes)
+- short (2 bytes)
+- long (8 bytes)
+- float (4 bytes)
+- double (8 bytes)
+- size_t (8 bytes)
+- bool (1 byte)
+- Etc (unsigned...)
+- Constantes
+- Variables
+- Vectores
+- Structs -> Puede contener a todos los otros tipos de datos
+* Declaracion e inicializacion de variables
+** C
+#+begin_src C
+int un_numero = 114;
+char una_letra = 'C';
+float otro_numero = 75, 41;
+short numerito_cortito = 1;
+size_t ultimo_numero = 3;
+#+end_src
+Es buena practica es declarar e inicializar las varibles al mismo tiempo para evitar uso de basura
+** Python
+#+begin_src python
+numero1 = 1
+una_letra = "C"
+otro_numero = 75.41
+numerito_cortito = 1
+ultimo_numero = 3
+#+end_src
+* Declaracion e inicializacion de constantes
+#+begin_src C
+const char PRIMER_LETRA = 'A';
+const size_t TAMANIO = 10;
+
+#define MAX_VECTOR 100
+#define NOMBRE "Messi"
+#+end_src
+* Vectores
+#+begin_src C
+int vector[MAX_VECTOR];
+int segundo_vector[2];
+
+vector[0] = 1;
+int primer_elemento_vector = vector[0];
+#+end_src
+* Structs
+#+begin_src C
+typedef struct duenio {
+  int edad;
+  char nombre[MAX_NOMBRE];
+} duenio_t;
+
+typedef struct gato {
+  char color_pelo;
+  bool es_gordo;
+  int anios;
+  char nombre[MAX_NOMBRE];
+  duenio_t esclavo;
+  struct gato *hijos; // Puntero a struct gato
+} gato_t;
+#+end_src
+Manejo de struct
+#+begin_src C
+gato_t michi; // De esta manera se acabo de crear un struct gano con basura en
+              // cada uno de sus campos
+michi.anios = 2;
+michi.es_gordo = false;
+michi.color_pelo = 'N';
+strcpy(michi.nombre, "Gato"); // Copia el string de la derecha y guarda la copia
+                              // en el string de la izquierda
+michi.esclavo.edad = 45;
+gato_t neko = michi;
+
+// Si se paso un struct por referencia
+
+michi->anios = 2;
+(*michi).anios = 2;
+michi->esclavo.edad = 35;
+#+end_src
+* If, else y else if
+** C
+#+begin_src C
+if (var1 == 1) {
+  printf("Algo1Mendez\n");
+} else if (var1 == 2) {
+  printf("Algo2Mendez\n");
+} else {
+  printf("OtraCatedra\n");
+}
+#+end_src
+** Python
+#+begin_src python
+if var1 == 1:
+    print("Algo1Mendez")
+elif var1 == 2:
+    print("Algo2Mendez")
+else:
+    print("OtraCatedra")
+#+end_src
+* While
+** C
+#+begin_src C
+int n = 5;
+while(n>0){
+    n--;
+    printf("%d", n);
+}
+#+end_src
+** Python
+#+begin_src python
+n = 5
+while n > 0:
+    n -= 1
+    print(n)
+#+end_src
+* For
+** C
+#+begin_src C
+int nums[MAX_VECTOR] = {4, 78, 9, 84};
+for (int i = 0; i < MAX_VECTOR; i++) {
+  printf("%d\n", nums[i]);
+}
+#+end_src
+** Python
+#+begin_src python
+nums = [4, 78, 9, 84]
+for n in nums:
+    print(n)
+#+end_src

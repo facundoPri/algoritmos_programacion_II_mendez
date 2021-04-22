@@ -1,0 +1,177 @@
+#+TITLE: Memoria
+* Punteros
+#+begin_src C
+int main() {
+    int a;
+    int* p_numero = &a;
+    *p_numero = 8;
+}
+#+end_src
+- int a; crea una variable en el stack que vale 4 bytes
+- int* p_numero = &a; Declaramos un puntero
+  + Los punteros son variables y tambien estan en el stack, ocupando lo que ocupe un puntero en tu maquina
+  + Todos los punteros ocupan lo mismo en el stack
+  + Los punteros guardan la direccion de algo
+  + En el caso estamos guardando la direccion de a (&a)
+  + como es un int* entonces tiene que apuntar a un valor que sea int tambien
+- *p_numero = 8; Accedemos al valor que guarda el puntero
+
+#+begin_src C
+int main() {
+  int *p_numero;
+  *p_numero = 8;
+
+  return 0;
+}
+#+end_src
+- En este caso tenemos un puntero que no aputa a ningun lado
+- En * antes de p_numero en la segunda linea del main dice recorrer la flecha o sea buscar el valor que p_numero apunta
+
+#+begin_src C
+void sumar_uno(int *numero) { (*numero)++; }
+
+int main() {
+  int a = 8;
+  sumar_uno(&a);
+}
+#+end_src
+- int a = 8; se crea una variable en stack, llamada a y se le da el valor de 8
+- sumar_uno(&a); le pasamos la direccion de 'a' a la funcion sumar_uno
+- la funcion sumar_uno recibe un puntero y a ese puntero le suma 1
+  + adentro de sumar_uno recorre la flechita con * y le suma 1 al valor guardado
+#+begin_src C
+int main() {
+  int a;
+  int *p_numero = malloc(sizeof(int));
+  *p_numero = 8;
+  free(p_numero);
+}
+#+end_src
+- int a; Creamos una variable a y la almacenamos en el stack
+- int *p_numero = malloc(sizeof(int)); con malloc reservamos memoria en el heap del tamaño de un int <4 bytes> y guardamos la direccion del primer byte en un puntero que esta almacenado en el stack
+  + malloc recibe una cantidad de bytes y devuelve la direccion en memoria del primer byte. Ya que malloc reserva en el heap la cantidad de bytes que uno le pase, uno al lado del otro
+- *p_numero = 8; Se puede tratar de la misma forma a la memoria que esta en le heap y la que esta en el stack. Asi que recorremos la flechita con el * y guardamos el entero 8 en el heap
+- free(p_numero); matamos el puntero
+
+#+begin_src C
+int *un_entero_en_el_heap(int numero) {
+  int *aux = malloc(sizeof(int));
+  *aux = numero;
+  return aur;
+}
+
+int main() {
+  int *un_entero = un_entero_en_el_heap(8);
+
+  int a = *un_entero
+}
+#+end_src
+- La funcion un_entero_en_el_heap recibe un entero y devuelve un puntero que referencia un entero en el heap
+- En el main guardamos lo que devuelve la funcion un_entero_en_el_heap (el puntero, direccion en la memoria) en un puntero llamado un_entero
+- Despues en la variable <a> guardamos el valor del puntero
+#+begin_src C
+int main() {
+  int numero;
+  numero = 8;
+
+  int *p_numero;
+  p_numero = &numero;
+
+  *p_numero = 10;
+
+  int **p_p_numero;
+  p_p_numero = &p_numero;
+
+  **p_p_numero = 12;
+
+  if (p_p_numero == &p_numero)
+    printf("Son iguals.", );
+
+  if (*p_p_numero == p_numero)
+    printf("Son iguals.", );
+  if (*p_p_numero == &numero)
+    printf("Son iguals.", );
+
+  if (**p_p_numero == numero)
+    printf("Son iguals.", );
+  if (**p_p_numero == *p_numero)
+    printf("Son iguals.", );
+  if (**p_p_numero == 12)
+    printf("Son iguals.", );
+}
+#+end_src
+- int numero; Creamos una variable entero en el stack
+- numero = 8; Asignamos el valor de 8 a la variable numero
+- int *p_numero; Creamos una varible entero puntero en el stack
+- p_numero = &numero; Le asignamos a la variable puntero la direccion de la variable numero
+- *p_numero = 10; Recorremos la flecha y le cambiamos el valor a 10 (Vamos a la memoria que el puntero esta referenciando)
+- int **p_p_numero; Creamos una varibale entero puntero en el stack
+- p_p_numero = &p_numero; Le asignamos a la variable p_p_numero la direccion de memoria de la variable p_numero
+- **p_p_numero = 12; Recorremos la flecha para llegar a p_numero y recorremos la flecha otra vez llegando al valor de numero y por ultimo asignandole 12
+
+#+begin_src C
+typedef struct cajon {
+  int acho;
+  int largo;
+  bool lleno;
+}
+
+int main() {
+  cajon_t un_cajon;
+  cajon_t *p_cajon = malloc(sizeof(cajon_t));
+
+  p_cajon->largo = 10;
+  /* (*p_cajon).largo = 10; */
+
+  /* No Hacer */
+  /* p_cajon = &un_cajon; */
+
+  cajon_t *p_otro_cajon = p_cajon;
+
+  free(p_cajon);
+  return 0;
+}
+#+end_src
+- Primer creamos un struct cajon que almacena dos enteros y un booleano
+- cajon_t un_cajon; Instanceamos una variable llamada un_cajon en el stack
+- cajon_t *p_cajon = malloc(sizeof(cajon_t)); Creamos una variable puntello llamada p_cajon y le asignamos la direccion de la memoria recervada por malloc
+  + malloc en este caso reservo la cantidad de bytes que requiere cajon_t
+- p_cajon->largo = 10; le estoy asignando al valor largo que referecia el puntero p_cajon
+  + (*p_cajon).largo = 10; Es lo mismo pero con otra notacion
+- Si hacemos p_cajon = &un_cajon; Estamos guardando en el puntero la direccion de un_cajon, que esta en stack, y haciendo esto perdemos la la direccion de la memoria que reservamos con malloc
+- cajon_t *p_otro_cajon = p_cajon; Aca estamos guardando la direccion que apunta mi puntero p_cajon en otro puntero llamado p_otro_cajon
+  + Esto se puede questionar si es bueno o no ya que si liberamos el puntero p_cajon terminariamos con uno apuntando a algo ya liberado
+
+#+begin_src C
+#define MAX_CAJONES 5
+#define MAX_COSAS 50
+#define MAX_DESCRIPCION 500
+
+typedef struct cosa {
+  char descripcion[MAX_DESCRIPCION];
+} cosa_t;
+
+typedef struct cajon {
+  int acho;
+  int largo;
+  cosa_t *cosas;
+  int cantidad_cosas;
+} cajon_t;
+
+int main() {
+  cajon_t *cajones = malloc(MAX_CAJONES * sizeof(cajon_t));
+  for (int i = 0; i < MAX_CAJONES; i++) {
+    cajones[i].cosas = malloc(sizeof(MAX_COSAS * cosa_t));
+  }
+
+  for (int i = 0; i < MAX_CAJONES; i++) {
+    free(cajones[i].cosas);
+  }
+  free(cajones);
+}
+#+end_src
+- cajon_t *cajones = malloc(MAX_CAJONES * sizeof(cajon_t)); Creamos un puntero llamado cajones
+  + Con malloc reservamos memoria suficiente para guardar 5 cajones (MAX_CAJONES) y le pasamos la direccion al puntero cajones
+- Con el for vamos a recorrer cada uno de los cajones en memoria y le asignamos al puntero cosas adentro de los cajores una direccion en memoria recervada con malloc
+  + Con malloc reservamos en el heap memoria suficiente para guardar el struct cosa
+- Para liberar la memoria lo importante es hacer contrario al la implemetancion, asi que liberamos primero la memoria que se encuentra adentro de los cajones y despues la lista de cajones
