@@ -1,0 +1,73 @@
+#+TITLE:  27-04-2021
+* Recursividad
+** Directa
+Funcion que se llama a si  misma
+Es ideal primero buscar la condicion d corte y despues seguir con la recursividad
+** Indirecta o mutua
+Mas de una funcion que se llaman entre si
+Normalmente tenemos dos condiciones de corte
+** De Cola
+Es una tecnia para optimizar la recursividad eliminando las constantes llamadas recursivas
+Se da cuando la llamada recursiva el la ultima instructiva de la funcion
+Se va guardado los valores en un acumulador para ahorrarse las llamadas recursivas
+** Divide y conquista
+-Dividir
+-Conquistar
+-Combinar
+Se divide el problema hasta no poder hacerlo mas y los combina de forma que solucione el problema
+Ejemplo: Mergesort
+* Control de versiones
+- Libro: progit
+Sistemas que te permiten volver atras y controlar estados de determinado projecto
+Tipos:
+- Local
+- Centralizado
+- Distribuido (Actual)
+** Git
+*** Particularidades
+- Hace copias instantaneas, no diferencias.(Guarda el archivo modificado, no la modificacion)
+- Esto hacer que se parezca mas a un controlador de archivos que un VCS (Version controller sistem)
+- Casi todas sus operaciones son locales y pocos comandos como push y pull son onlines
+- Tiene integridad, todo es verificado mediante una suma de comprobaciones antes de ser almacenado, y es identificado a partid de este momento mediante dicha suma
+  + Genera una suma de comprobaciones que se conose como SHA-1, el hash es una suma de 40 caracteres
+*** Los tres estados
+1- Confirmado (committed)
+2- Modificado (modified)
+3- Preparado (staged)
+*** Directorios
+- Directorio de Git (.git directory)
+- Directorio de trabajo (working directory)
+- Area de preparacion (stagin area)
+*** Flujo de trabajo
+- Se modifican una serie de archivos del directorio de trabajo
+- Se preparan los archivos anadiendolos a la area de preparacion
+- Se confirman los cambion, lo que toma los archivos tal como esta en la area de preparacion
+*** Comados
+- ~git config --list~
+Listamos la configuracion de git
+- ~git init~
+Inicializamos el repositorio git
+- ~git status~
+Te muesta el estado de la branch
+Por ejemplo los archivos que todavia no estan traqueados
+- ~git add <archivo>~
+Empieza a traquear el archivo que le pasemos
+- ~git rm --cached <archivo>~
+Remueve del staging area al archivo
+- ~git restore <archivo>~
+Descarta los ultimos cambios volviendo a la version del archivo que esta en el stage
+- ~git commit~
+Me va a llevar a un editor para escribir el mensaje de commiteo
+Y cuando lo confirme, me confirma los cambios con un commit
+- ~git restore --staged <archivo>~
+Me saca del stage el archivo
+- ~git commit -m "<mensaje>"~
+La version corta de commit, que me permite escribir el mensaje de commit en el mismo terminal
+- ~git rm <archivo>~
+Elimina un archivo del git
+- ~git restore <archivo>~
+Restaura el archivo eliminado
+- ~git log~
+Me muestra la historia del repositorio, mostrandome los commits
+- ~git reset HEAD~1~
+Deshacer los ultimos cambios, sacando el ultimo commit

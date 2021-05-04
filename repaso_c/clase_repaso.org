@@ -74,7 +74,7 @@ typedef struct gato {
 #+end_src
 Manejo de struct
 #+begin_src C
-gato_t michi; // De esta manera se acabo de crear un struct gano con basura en
+gato_t michi; // De esta manera se acabo de crear un struct gato con basura en
               // cada uno de sus campos
 michi.anios = 2;
 michi.es_gordo = false;
@@ -139,4 +139,75 @@ for (int i = 0; i < MAX_VECTOR; i++) {
 nums = [4, 78, 9, 84]
 for n in nums:
     print(n)
+#+end_src
+* Switch
+#+begin_src C
+int nums[MAX_VECTOR] = {4, 78};
+
+switch (nums[i]) {
+case 4:
+  printf("4\n");
+  break;
+case 78:
+  printf("78\n");
+  break;
+default:
+  printf("No hay valores aca\n");
+}
+#+end_src
+* Escritura de archivos
+- FILE es el tipado para los archivo
+  + Se tiene que usar como puntero
+- fopen() recibe la ruta relativa del archivo y la forma de abrir el archivo
+  + "r" o "w" leer o escribir
+  + Si falla devuele NULL
+  + "w" abre un archivo en blanco, creandolo o borrando uno ya existente
+- fclose() recibe un puntero a un archivo y lo cierra
+#+begin_src C
+FILE *archivo = fopen('<ruta_archivo>', 'r');
+fclose(archivo)
+#+end_src
+- fscanf()
+  + Recibe el puntero al file que queremos leer, el formato de lectura y los valores donde va a ir poniendo los valores que lee
+  + Devuelve la cantidad de valores que leyo o EOF que significa que llego al final del archivo
+- fprintf()
+  + Recibe un puntero a un file, el formato de escritura y los valores que utilizara para escribir el archivo
+#+begin_src C
+#define FORMATO_LECTURA "%[^;];%i;%[^;];%[^;];%i\n"
+#define FORMATO_ESCRITURA "%s;%i;%s;%s;%i\n'
+
+typedef struct medallista {
+  char pais[MAX_NOMBRE];
+  int anio;
+  char disciplina[MAX_NOMBRE];
+  char nombre[MAX_NOMBRE];
+  int puntos;
+} medallista_t;
+
+void preguntar_nuevo_meadllista(medallista_t *nuevo) {
+  printf("De que pais es el nuevo medallista?\n");
+  scanf("%s", nuevo->pais);
+  printf("Año en el que gano?\n");
+  scanf("%i", &(nuevo->anio));
+  printf("En que deporte gano?\n");
+  scanf("%s", nuevo->disciplina);
+  printf("El Nombre y apellido del master?\n");
+  scanf("%s", nuevo->nombre);
+  nuevo->puntos = 50;
+}
+
+void escribir_nuevos(FILE *viejo, FILE *actualizado) {
+  medallista_t actual;
+  int leidos = fscanf(viejo, FORMATO_LECTURA, actual.pais, atual.anio,
+                      actual.disciplina, actual.nombre, &actual.puntos);
+  while (leidos != EOF) {
+    fprintf(actualizado, FORMATO_ESCRITURA, actual.pais, actual.anio,
+            actual.disciplina, actual.nombre, actual.puntos);
+    leidos = fscanf(viejo, FORMATO_LECTURA, actual.pais, atual.anio,
+                    actual.disciplina, actual.nombre, &actual.puntos);
+  }
+  preguntar_nuevo_meadllista(&actual);
+  fprintf(actualizado, FORMATO_ESCRITURA, actual.pais, actual.anio,
+          actual.disciplina, actual.nombre, actual.puntos);
+}
 #+end_src

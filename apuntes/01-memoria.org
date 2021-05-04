@@ -1,0 +1,41 @@
+#+TITLE: 01 Memoria
+
+* Artimetica de puteros
+#+begin_src C
+int x[100], b, *pa, *pb;
+
+x[50] = 10; // Se asinga el valor de 10, al array #50
+pa =
+    % x[50]; // Se asigna al puntero pa, la direccion de memoria que tiene x[50]
+
+b = *pa + 1; // Esto es igual a: b=x[50]+1; => Su valor serai igual a 11
+
+b = *(pa + 1); // Esto primero para a la siguiente direcion de memoria
+               // y luego lo referencia
+               // El resultado es: b = x[51]
+
+pb = &x[10]; // Al puntero pb se le asigna la direccion de x[10]
+
+, *pb = 0; // Al valor que tiene el puentero se le asigna 0
+           // Esto es igual a decir: x[10] = 0
+
+, *pb += 2; // El valor del puntero se icrementa en dos unidades,
+            // es decir x[10] += 10
+
+(*pb)--; // El valor del puntero se decrementa en una unidad.
+
+x[0] = *pb-- // A x[0] se le pasa el valor de x[10] y el puneto pb,
+             // para a apuntar a x[9]
+             // Recordar, que -- s post-decremento, primero adignará y luego
+             // restará
+#+end_src
+** Operador de direccion (&)
+- Este permite acceder a la direccion de memoria de una variable
+** Operador de indireccion (*)
+- Ademas de que permite declarar un tipo de dato puntero, tambine permite ver el VALOR que esta en la direccion asignada
+** Incremento (++) y Decremento (--)
+ - Se puede uesar un puntero como si un array se tratase, por eso mismo permite estos operadores
+* Puntero comodin: void*
+Un puntero generico puede apuntar a cualquier cosa.
+La restriccion sobre el puntero comodin es que no puede ser desreferenciado
+No se le pueden aplicar las reglas de aritmetica de puenteos a un puenteo generico pero puede ser convertido a cualquier tipo de dato sin una conversion explicita

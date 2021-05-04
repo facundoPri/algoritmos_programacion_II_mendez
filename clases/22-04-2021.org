@@ -1,1 +1,10 @@
 #+TITLE: 22 04 2021 - Practica
+* Programar una agenda
+** Notas
+- Para asignar un puntero sin ningun valor le pasamos NULL por convencion
+- Hacer strcpy solo es valido si vamos a copiar una string en un una memoria reservada
+- malloc devuelve NULL cuando falla o cuando hacemos malloc(0) algunas veces
+  + Mismo comportamiento para realloc
+  + Hacer realloc(0) puede terminar pasando en nuestro programa y hay que tener cuidado ya que puede devolver NULL
+- strcpy recibe un puntero y una string y copia la string en la memoria de puntero
+- calloc recibe la cantidad de valores y el tamaño del valor y inicializa la memoria con 0

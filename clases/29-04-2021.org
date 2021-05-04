@@ -1,0 +1,19 @@
+#+TITLE: 29 04 2021
+* Backtracking
+es una tecnica de resolucion de problemas que explora recursivamente todas las solucione posibles
+Ejemplo:
+- Arbol
+- Laberinto
+* Ejercicio laberinto
+Estamos en la funcion explorar_laberinto
+Arranco con las condiciones de corte:
+- Que sea salida
+- Que pared
+Muevo para algun casillera y llamo devuelta la funcion explora_laberinto
+Caso que explorar_laberinto me de 1 salgo de la funcion
+Caso que de 0 me fijo otra de las posiciones
+Osea llamo moverse de nuevo para otra de las posibles posiciones y asi con todas las posiciones posibles
+Si despues de verificar todas las posiciones si encuentra pared en todas entonces devuelve 0
+
+Le vamos agregar a explorar_laberinto el marcar_posicion_actual
+Con esto apenas tenemos que chequear despues de verificar si es pared, que no este marcado
