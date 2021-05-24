@@ -1,0 +1,75 @@
+#+TITLE: 18 05 2021
+* Arboles y abb
+** Recursividad
+*** Requerimientos de una funcion recursiva
+**** Condicion de corte
+**** Llamada recursiva de la funcion
+** Definicion y caracteristicas generales
+*** Un arbol es una coleccion de nodos, Los nodos son elementos o vertices del arbol.
+*** Esta coleccion puede estar vacia, o puede ser que consista un nodo destacado, llamado raiz que puede tener 0 o varios sub-arboles no vacios conectados a la raiz, donde cada uno  de ellos contiene a una raiz.
+*** De este concepto, podemos denominar que nodo raiz esta conectado a sus sub-arboles mediante el nodo hijo.
+** Arboles binarios
+*** Definicion
+**** Estos arboles estan intimamente relacionado a las operaciones de busqueda, con el objetico de aproximarse a la busqueda binaria
+**** El nodo raiz esta solamente conectado a dos sub-arboles, lo cual nos permite determinar la nocion de izquiera y derecha
+**** Cada nodo puede tener 0, 1 o 2 hijos
+*** Operaciones de los arboles binarios
+#+begin_src C
+typedef struct nodo_arbol *arbol_binario_t;
+
+struct nodo_arbol {
+  void *elemento;
+  nodo_arbol *izquierda;
+  nodo_arbol *derecha;
+}
+#+end_src
+**** Crear
+**** Insertar
+**** Borrar
+**** Buscar
+**** Vacio
+**** Destruir
+**** Recorrer
+*** Recorridos en los Arboles binarios
+**** Preorden
+***** Primero se visita el nodo actual luego el sub-arbol izquierdo y luego el derecho.
+***** Se suele utilizar cuando se quiere clonar el arbol.
+**** Inorden
+***** Primero se visita el sub-arbol izquierdo, luego el nodo actual y por ultimo el sub-arbol derecho.
+***** Sirve para obtener todos los elementos del arbol ordenados de menor a mayor.
+**** Postorden
+***** Primero se visita el sub-arbol izquierdo, luego al sub-arbol derecho y por ultimo al nodo actual.
+***** Sirve para destruir el arbol.
+** Arbol de busqueda binaria (ABB)
+*** Definicion
+**** Al arbol binario se le agrega un comparador y cada nodo del arbol posee un valor o una clave unica.
+**** Lo que permite determianr esto es dado un nodo raiz, los sub-arboles derechos contienen valores mayores que la raiz y los sub-arboles izquierdos, valores menores que la raiz.
+**** El comparador junto unicidad de la clave/valor, nos da una guia de como recorrer el arbol.
+*** Caracteristicas Principales
+**** Las claves mayores se insertan en los sub-arboles derechos
+**** Las claves menores se insertan en los sub-arboles izquierdos
+**** Ambos sub-arboles tambien son arboles de busqueda binaria
+*** Ejemplo de comparador en C
+#+begin_src C
+typedef int (*abb_comparador)(void *, void *);
+#+end_src
+*** ABB: insertar
+**** Pasos:
+***** Se intenta insertar un valor en arbol.
+***** Y se empieza a recorrer el abb desde la raiz de la siguiente forma
+**** El arbol actual no esta vacio,mediante el comparador determino si el valor se inserta en el sub-arbol derecho o izquierdo. Luego se manda a insertar el nuevo valor en el sub-arbol correspondiente
+**** Si el arbol actual esta vacio, se inserta el valor como raiz del nuevo arbol
+*** ABB: Buscar
+**** Pasos: Desde la raiz, se busca en el arbol y hay 3 casos
+**** Si el arbol actual no esta vacio, y la raiz es el elemento buscado. Se termino la busqueda y se devuelve el elemento encontrado.
+**** Si el arbol actual no esta vacio, y la raiz no es el elemento buscado. Segun lo que diga el comparador, se busca si el valor esta buscado en el sub-arbol derecho o izquierdo
+**** Si el arbol actual esta vacio, el elemento buscado no existe en el arbol. Y se termina la busqueda
+*** ABB: Borrar
+**** Pasos: primero se busca si el elemento que se quiere borrar esta dentro del arbol. Dependiendo de la cantidad de hijos que tenga la raiz se llega a uno de los tres casos
+**** El nodo a borrar no tiene hijos( es un nodo hoja ). Se borra
+**** El nodo a borrar tiene un hijo. El nodo hijo pasa a tomar el lugar del padre y se borra al padre.
+**** El nodo a borrar tiene 2 hijos. Se busca a su predecesor,que puede ser el mayor de los menores o el menor de los mayores( convencion que se tiene que tomar a lo largo de toda la implementacion del arbol). Ese nodo sera la nueva raiz del arbol y se borra la raiz vieja
+** Arboles Equilibrados
+*** A pesar de todo esto, el ordenar en el que se insertan los elementos en un ABB es algo de gran importancia, Dos ABB con los mismos elementos  pero insertados es distinto orden no necesariamente son iguales
+*** Debido a esto los arboles puden degenerar en listas
+*** La complejidad algoritmica de la operaciones de buscar, insertar y borrar en un ABB, en el peor de los casos, es O(N)
