@@ -1,0 +1,137 @@
+#+TITLE: 11 05 2021
+* Pilas
+** Que es una pila?
+- Estructura de datos
+- Agrupa elementos
+- LIFO -> Last In, First Out
+- Apenas tenemos acceso al primer elemento
+- Al ser un tda, esta encapsulado, no podemos ver su contenido libremente
+** Operaciones
+- Crear (create)
+- Destruir (destroy)
+- Apilar (push)
+- Desapilar (pop)
+- Tope (top)
+- Vacia (isEmpty)
+** Ejemplo
+Tope
+| 2 |
+| 7 |
+| 3 |
+| 4 |
+| 9 |
+- 2 Es el tope
+- Desapilo y saco el 2
+| 7 |
+| 3 |
+| 4 |
+| 9 |
+- Apilo 8 a la pila
+| 8 |
+| 7 |
+| 3 |
+| 4 |
+| 9 |
+- Tope me devuelve 8 sin desapilarlo
+** Implementaciones
+*** Vector estatico
+- Es basicamente utilizar un vetor estatico, un array estatico
+- Problema, en un vector estatico, puedo ver cualquier uno de los elementos
+  + Esto rompe nuestra implementacions de pila
+**** Implementacion
+- Tenemos una pila que es un vector estatico
+- Tenemos una variables tope
+  + Tope es lugar en el vector donde se encuentra el tope
+- Tenemos una variable capacidad
+  + Capacidad es la cantidad maxima de elemetos que podemos apilar
+- Podes seguir apilando hasta que se termine la capacidad
+  + Osea, hasta que tope sea igual a capacidad
+- Apilar es agregar un elemento a mi vector
+*** Vector dinamico
+- Ahora en vez de tener capacidad, tenemos tamaño ya que al ser un vector dinamico, no hay capacidad maxima
+- Si el tope es igual a tamaño, pido mas memoria y tengo una pila con un tamaño mayor
+- Redimension
+  + Depende de la implementacion y de la necesidad
+  + Cuando?
+    - Cuando se llego al maximo o cuando se desapila
+- Una debilidad de esta implementacion, es que realloc siempre necesita de memoria continua
+  + Si no hay memoria continua disponible esta implementacion ya no sirve
+*** Pila como lista de nodos enlazados
+- Viene para solucionar el problema de no tener memoria continua disponible
+- Nodos enlazados a su vez es un pequeño tda
+**** Nodo Enlazado
+- Es un tda donde se abstrae la idea de un contenedor que no solo va a contener a un tipo de dato determinado, sino que tambien podria apuntar al proximo elemento
+- Es como un eslavon, donde se contiene el dato y apunta al siguiente eslavon que esta conectado
+**** Lista de nodos
+- Los elementos son nodos
+- Cada uno tiene una referencia al nodo anterior
+- Reservo memoria para cada nodo cuando quiero apilar
+- Libero memoria para cada nodo cuando quiero desapilar
+- La memoria no tiene que ser continua
+***** Implementacion
+- La pila es un puntero al tope
+- Para apilar creo un nodo que apunte al tope de la pila, y cambio el tope de la pila a este nodo
+- Para desapilar necesitamos apuntar al nodo a eliminar, hacer con que el tope apunte a la referencia del nodo a eliminar y despues eliminamos el nodo a eliminar
+  + En algunas implementaciones puede ser interesante en vez de eliminar el nodo, devolverlo
+* Cola
+** Que es una cola?
+- FIFO- First in, First Out
+  + Elimina por el frente
+  + Inserta por el final
+** Operaciones
+- Crear
+- Destruir
+- Encolar
+- Desencolar
+- Primero
+- Vacio
+** Implementaciones
+*** Vector estatico
+- Encolar agrega un elemento despues del ultimo
+- Desencolar elimina un elemento al principio
+  + Problema es que cuando removemos un elemento adelante la fila no cambia de tamaño y empieza a desperdiciar memoria al principio
+  + Entonces necesitamos recorrer cada uno de los elementos cada vez que desencolamos para moverlos hacia adelantes
+  + Otra solucion es hacer una cola circular
+**** Complajidad
+- Encolar O(1)
+- Desencolar O(n) o O(1)
+*** Vector dinamico
+- No tengo limite/ capacidad
+- Sigo con el mismo problema de desencolar y tengo mismas soluciones
+*** Nodos enlazados
+- Crear: crea una estuctura que apunta al principio y al final de nuestra cola, cuando esta recien creado estos apunta a null
+  + 0(1)
+- Encolar: Creamos un nodo que apunta a null y hacemos con que final a punte a este y que el actual final, si existe, apunte a este nodo, si la cola esta vacia principio apunta a principio tambien
+  + 0(1)
+- Desencolar: Guardamos el nodo a desencolar, el que apunta a principio, apuntamos principio a el nodo que apuntaba el nodo principio y liberamos principio
+* Listas
+** Que es una lista?
+- Agrupa elementos
+- Cada elemento tiene un sucesor (menos el ultimo) y un predecesor (menos el primero)
+** Operaciones
+- Crear (create)
+- Destruir (destroy)
+- Insertar (insertAt)
+- Eliminar (deleteAt)
+- Vacia (isEmpty)
+- Ver elemento (find)
+** Implementaciones
+*** Vector estatico
+*** Vector dinamico
+*** Lista de nodos
+** Tipos de listas
+*** Simplemente enlazada
+- Implementacion con nodos
+- Cada uno con referencia al nodo siguiente
+- Lista mantiene referencia al primer nodo
+- Reservo memoria para cada nodo
+- Libero memoria para cada nodo
+- No necesito memoria continua
+*** Doblemente enlazada
+- Nodo tiene referencia al sucesor y predecesor
+*** Circular
+- Hacemos uso del ultimo nodo, para apuntar al primero
+- Para ver que terminaste de recorrer la lista en vez de buscar una referencia null vas a buscar que la referencia del ultimo nodo, sea el primero
+- Para inicializar la lista, si solo hay un solo elemento, este elemento se apunta a si mismo
+*** Circular doblemente enlazada
+- Combina los dos elementos anteriormente
