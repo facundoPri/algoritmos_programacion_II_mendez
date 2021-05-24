@@ -1,0 +1,123 @@
+#+TITLE: 13 05 2021
+* Lista recursiva
+Una estructura recursiva es una estuctura compuesta por elementos iguales
+Vamos a hacer una lista de nodos, recursiva
+cadena.h
+#+begin_src C
+typedef struct _gachito {
+  int numero;
+  struct ganchito *siguiente:
+} ganchito_t;
+
+typedef struct {
+  ganchito_t *actual;
+} cadena_iterador_t;
+
+ganchito_t *cadena_crear();
+
+void cadena_eliminar(ganchito_t *g);
+
+ganchito_t *cadena_enganchar_al_final(ganchito_t *g, int numero);
+ganchito_t *cadena_enganchar_al_inicio(ganchito_t *g, int numero);
+
+int cadena_obtener_valor(ganchito_t *size_t posicion);
+
+size_t cadena_longitud(ganchito_t *g);
+
+size_t cadena_a_cada_ganchito(ganchito_t *g,
+                              bool (*funcion)(ganchito_t *, void *),
+                              void *extra);
+
+cadena_iterador_t *cadena_iterador_crear(ganchito_t *);
+void cadena_iterador_destruir(cadena_iterador_t *);
+
+int cadena_iterador_obtener_elemento(cadena_iterador_t *);
+bool cadena_iterador_avanzar(cadena_iterador_t *);
+bool cadena_iterador_tiene_siguiente(cadena_iterador_t *);
+#+end_src
+
+pruebas.c
+#+begin_src C
+void dadaUnaCadenaNull_SiEnganchoUnNumero_resultaEnUnaCadenaNoNull() {
+  ganchito_t *cadena = NULL;
+  cadena = cadena_enganchar_al_final(cadena, 1);
+  pa2m_afirma(cadena != NULL, "La cadena es no nula");
+  pa2m_afirma(cadena_longitud(cadena) == 1, "La cadena tiene 1 elemento");
+  cadena_eliminar(cadena);
+}
+
+void dadaUnaCadena_SiEnganchoElementos_LaCadeanSeAgranda() {
+  ganchito_t *cadena = cadena_enganchar_al_final(NULL, 1);
+  cadena = cadena_enganchar_al_final(cadena, 2);
+  pa2m_afirma(cadena_longitud(cadena) == 2, "La cadena tiene 2 elementos");
+  cadena_eliminar(cadena);
+}
+
+void dadaUnaCadena_siEnganchoElementosAlfinal_LosElementosSeEnganchanEnOrden() {
+}
+
+int main() {
+  pa2m_nuevo_grupo("Prubas de enganchar");
+  dadaUnaCadenaNull_SiEnganchoUnNumero_resultaEnUnaCadenaNoNull();
+  dadaUnaCadena_SiEnganchoElementos_LaCadeanSeAgranda();
+  pa2m_nuevo_grupo("Prubas de obtener valor");
+  dadaUnaCadena_siEnganchoElementosAlfinal_LosElementosSeEnganchanEnOrden();
+
+  return pa2m_mostrar_reporte();
+}
+#+end_src
+cadena.c
+#+begin_src C
+ganchito_t *cadena_crear() { return NULL; }
+
+void cadena_eliminar(ganchito_t *g) {
+  if (g) {
+
+    cadena_eliminar(g->siguiente);
+    free(g);
+  }
+}
+
+gannchito_t *cadena_enganchar_al_final(ganchito_t *g, int numero) {
+  if (!g) {
+    ganchito_t *ganchito = calloc(1, sizeof(ganchito_t));
+    ganchito->numero = numero;
+    return ganchito;
+  }
+  g->siguinte = cadena_enganchr_al_final(g->siguiente, numero);
+  return g;
+}
+ganchito_t *cadena_enganchar_al_inicio(ganchito_t *g, int numero);
+
+size_t cadena_longitud(ganchito_t *g) {
+  if (!g)
+    return 0;
+  return 1 + cadena_longitud(g->g.siguinte)
+}
+
+int cadena_obtener_valor(ganchito_t *size_t posicion) {
+  if (!g)
+    return NULL;
+  if (posicion == 0)
+    return g->numero;
+  return cadena_obtener_valor(g->siguiente, posicion - 1)
+}
+
+size_t cadena_a_cada_ganchito(ganchito_t *g,
+                              bool (*funcion)(ganchito_t *, void *),
+                              void *extra) {
+  if (!g)
+    return 0;
+
+  if (funcion(g, extra))
+    return cadena_a_cada_ganchito(g->siguente, funcion, extra);
+  return 1;
+}
+
+cadena_iterador_t *cadena_iterador_crear(ganchito_t *);
+void cadena_iterador_destruir(cadena_iterador_t *);
+
+int cadena_iterador_obtener_elemento(cadena_iterador_t *);
+bool cadena_iterador_avanzar(cadena_iterador_t *);
+bool cadena_iterador_tiene_siguiente(cadena_iterador_t *);
+#+end_src
