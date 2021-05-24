@@ -1,0 +1,4 @@
+make: Entering directory '/home/facupri/Documents/Facultad/algoritmos_programacion_II_mendez/tps/tp1_salon_de_la_fama/archivos'
+gcc -g -O0 -std=c99 -Wall -Wconversion -Wtype-limits -pedantic -Werror -o salon main.c salon.c util.c
+make: Leaving directory '/home/facupri/Documents/Facultad/algoritmos_programacion_II_mendez/tps/tp1_salon_de_la_fama/archivos'
+ 

@@ -51,7 +51,6 @@ char **split(const char *str, char separador) {
   // TODO: Para a while para no necesitar del strlen
   for (int i = 0; i <= strlen(str); i++) {
     if (str[i] == separador || i == strlen(str)) {
-      // printf("tamaño %zu\n", tamano_aux);
       char *substring = calloc((tamano_aux + 1), sizeof(char));
 
       for (int i = 0; i < (tamano_aux) * sizeof(char); i++) {
