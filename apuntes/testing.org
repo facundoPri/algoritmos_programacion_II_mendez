@@ -1,0 +1,61 @@
+#+TITLE: Testing
+* Que es un test?
+Un procedimiento destinado a determinar la calidad rendimiento o confiabilidad de algo, especialmente antes que sea llevado al uso masivo
+* Anatomia de un test
+- Recibe un input
+- Ejercuta el codigo con ese input
+- Contrasta el output recibido con el esperado
+- Son iguales, entonces paso, distintos, fallo
+* Importancia del testing en el software
+** Software esta en todo:
+- Computadoras, celulares, electrodomestico, autos, aviones, etc,
+- Nasa: Mars Climate Orbiter I, perdida de 328M U$S
+** Software es alfo que cambia constantemente:
+- Cambios son relativamente faciles
+- Clientes siempre piden mas
+- Necesidad de adaptarse a cambios del entorno
+- Necesidad de solucionar bugs
+* Ventajas del testing y desventajas de su ausencia
+** Beneficios ( a largo plazo ):
+- Verificacion de funcionalidad
+  + Identificacion de bugs
+  + Comunicacion entre modulos
+- Red de seguridad ante cambios
+- Documentancion
+** Desventajas de su ausencia:
+- Gerencia y clientes que no ven la importacia del testing
+- Aumento en el costo de mantenimiento
+  + Costo de correccion de bugs
+  + Costo de agregar nuevas funcionalidades
+* Diferentes tipos de testing
+** Test de caja negra vs caja blanca
+- Tests de caja negra:
+  + No importa la implementancion
+  + Solo interesan inputs y outputs
+  + Casos bordes del dominio
+- Tests de caja blanca:
+  + Se pone a prueba la implementancion
+  + Interesa conocer el comportamiento del codigo ante un input determinado
+  + Casos bordes de la implementacion
+** Tests unitarios vs de integracion
+- Test unitarios:
+  + Se pone a prueba una unica funcion o una pequeña funcionalidad
+  + Facilitan el debuggeo de funcion individuales
+  + Pequeños indicadores del funcionamiento del codigo
+- Tests de integracion:
+  + Se pone a prueba la interaccion entre varios modulos
+  + Facilitan el debuggeo entre modulos
+  + Indican como se comporta la aplicacion en conjunto
+** Tests manuales vs automaticos
+- Test manuales:
+  + Ejecutadas manualmente
+  + Preferible para casos dificiles de automatizar
+  + Lentas y propensas a errores
+- Tests automaticos:
+  + Las pruebas se escriben en codigo para que se eecuten de forma automatica
+  + Preferible para casos repetitivos
+  + Rapidas y repetibles
+* Buena practica: nombre descriptivo
+given/dado, when/cuando, then/entonces
+ejemplo:
+DadoLosNumerosEnterosUnoYDos_CuandoLosSumo_EntoncesObtengoValorTres
