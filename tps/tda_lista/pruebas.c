@@ -140,6 +140,77 @@ void DadaUnaListaUnElementoYUnaPosicionTresVeces_CuandoIngresoElementoAListaEnPo
   free(lista);
 }
 
+// Borrar ultimo elemento de lista
+// Lista esta vacia
+void DadaUnaListaVacia_CuandoIntentoBorrarElUltimoElemento_EntoncesObtengoMenosUno() {
+  lista_t *lista = lista_crear();
+  pa2m_afirmar(lista_borrar(lista) == -1,
+               "Borrar ultimo elemento de lista vacia devuele -1");
+
+  free(lista);
+}
+// Lista NULL
+void DadaUnaListaNula_CuandoIntentoBorrarElUltimoElemento_EntoncesObtengoMenosUno() {
+  pa2m_afirmar(lista_borrar(NULL) == -1,
+               "Borrar ultimo elemento de lista Nula devuele -1");
+}
+// Borrar un elemento de la lista hace con que la cantidad disminuya
+void DadaUnaLista_CuandoBorroElUltimoElemento_EntoncesLaCantidadDeNodosDisminuye() {
+  lista_t *lista = lista_crear();
+  void *elemento_uno = (void *)1;
+  void *elemento_dos = (void *)2;
+  void *elemento_tres = (void *)3;
+  lista_insertar(lista, elemento_uno);
+  lista_insertar(lista, elemento_dos);
+  lista_insertar(lista, elemento_tres);
+
+  pa2m_afirmar(lista->cantidad == 3, "Lista contiene 3 nodos");
+  lista_borrar(lista);
+  pa2m_afirmar(lista->cantidad == 2, "Lista contiene 2 nodos");
+  lista_borrar(lista);
+  pa2m_afirmar(lista->cantidad == 1, "Lista contiene 1 nodo");
+  lista_borrar(lista);
+  pa2m_afirmar(lista->cantidad == 0, "Lista contiene 0 nodos");
+
+  free(lista);
+}
+
+// Chequear que el ultimo elemento se borre
+void DadaUnaLista_CuandoBorroElUltimoElemento_EntoncesLaListaCambiaDeUltimoElemento() {
+  lista_t *lista = lista_crear();
+  void *elemento_uno = (void *)1;
+  void *elemento_dos = (void *)2;
+  void *elemento_tres = (void *)3;
+  // printf("%i",*(int*)lista->nodo_fin);
+  lista_insertar(lista, elemento_uno);
+  lista_insertar(lista, elemento_dos);
+  lista_insertar(lista, elemento_tres);
+
+  lista_borrar(lista);
+  pa2m_afirmar(lista->nodo_fin->elemento == elemento_dos,
+               "Al borrar el ultimo elemento, nodo_fin apunta al anterior [1]");
+  lista_borrar(lista);
+  pa2m_afirmar(lista->nodo_fin->elemento == elemento_uno,
+               "Al borrar el ultimo elemento, nodo_fin apunta al anterior [2]");
+
+  free(lista->nodo_inicio);
+  free(lista);
+}
+// Borrar el ultimo elemento de una lista con un elemento hace que esta este
+// vacia y los nodos apunten a null
+void DadaUnaListaConUnElemento_CuandoBorroElUltimoElemento_EntoncesLaListaQuedaVaciaYConSusNodosApundandoANULL() {
+  lista_t *lista = lista_crear();
+  void *elemento_uno = (void *)1;
+  lista_insertar(lista, elemento_uno);
+
+  lista_borrar(lista);
+  pa2m_afirmar(lista->nodo_inicio == NULL, "El nodo inicio apunta a NULL");
+  pa2m_afirmar(lista->nodo_fin == NULL, "El nodo fin apunta a NULL");
+  pa2m_afirmar(lista->cantidad == 0, "La cantidad de la lista es 0");
+
+  free(lista);
+}
+
 
 int main() {
   pa2m_nuevo_grupo("Crear lista");
