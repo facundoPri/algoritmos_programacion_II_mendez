@@ -120,8 +120,11 @@ int lista_borrar_de_posicion(lista_t *lista, size_t posicion) {
   return 0;
 }
 
-void* lista_elemento_en_posicion(lista_t* lista, size_t posicion){
+void *lista_elemento_en_posicion(lista_t *lista, size_t posicion) {
+  if (!lista || lista->cantidad < posicion + 1 || lista->cantidad == 0)
     return NULL;
+
+  return recorrer_nodos(lista->nodo_inicio, posicion)->elemento;
 }
 
 void* lista_ultimo(lista_t* lista){

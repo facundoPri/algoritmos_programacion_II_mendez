@@ -306,6 +306,63 @@ void DadaListaYPosicion_CuandoBorroElementoEnPosicion_EntoncesLosNodosSiguenCone
   free(lista);
 }
 
+// Obtener elemento de lista en posicion
+// Testear con 4 elementos
+void DadaListaCon4ElementosYPosiciones_CuandoBuscoElementos_EntoncesObtengoElElementoDeseado() {
+  lista_t *lista = lista_crear();
+  void *elemento_uno = (void *)1;
+  void *elemento_dos = (void *)2;
+  void *elemento_tres = (void *)3;
+  void *elemento_cuatro = (void *)4;
+  lista_insertar(lista, elemento_uno);
+  lista_insertar(lista, elemento_dos);
+  lista_insertar(lista, elemento_tres);
+  lista_insertar(lista, elemento_cuatro);
+
+  pa2m_afirmar(lista_elemento_en_posicion(lista, 0) == elemento_uno,
+               "Obtengo elemento uno");
+  pa2m_afirmar(lista_elemento_en_posicion(lista, 1) == elemento_dos,
+               "Obtengo elemento dos");
+  pa2m_afirmar(lista_elemento_en_posicion(lista, 2) == elemento_tres,
+               "Obtengo elemento tres");
+  pa2m_afirmar(lista_elemento_en_posicion(lista, 3) == elemento_cuatro,
+               "Obtengo elemento cuatro");
+
+  free(lista->nodo_inicio->siguiente->siguiente->siguiente);
+  free(lista->nodo_inicio->siguiente->siguiente);
+  free(lista->nodo_inicio->siguiente);
+  free(lista->nodo_inicio);
+  free(lista);
+}
+// Lista Nula
+void DadaListaNulaYPosicion_CuandoBuscoElemento_EntoncesObtengoNULL() {
+  pa2m_afirmar(lista_elemento_en_posicion(NULL, 0) == NULL,
+               "Buscar en lista nula devuelve NULL");
+}
+// Lista Vacia
+void DadaListaVaciaYPosicion_CuandoBuscoElemento_EntoncesObtengoNULL() {
+  lista_t *lista = lista_crear();
+  pa2m_afirmar(lista_elemento_en_posicion(lista, 0) == NULL,
+               "Buscar en lista vacia devuelve NULL");
+
+  free(lista);
+}
+// Posicion mayor a la cantidad devuelve null
+void DadaListaYPosicionMayorACantidad_CuandoBuscoElemento_EntoncesObtengoNull() {
+  lista_t *lista = lista_crear();
+  void *elemento_uno = (void *)1;
+  void *elemento_dos = (void *)2;
+  lista_insertar(lista, elemento_uno);
+  lista_insertar(lista, elemento_dos);
+
+  pa2m_afirmar(lista_elemento_en_posicion(lista, 3) == NULL,
+               "Buscar en posicion mayor a cantidad devuelve NULL");
+
+  free(lista->nodo_inicio->siguiente);
+  free(lista->nodo_inicio);
+  free(lista);
+}
+
 
 int main() {
   pa2m_nuevo_grupo("Crear lista");
