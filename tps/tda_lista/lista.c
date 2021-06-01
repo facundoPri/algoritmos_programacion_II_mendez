@@ -3,20 +3,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-lista_t* lista_crear(){
-    lista_t * lista = calloc(1, sizeof(lista_t));
+lista_t *lista_crear() {
+  lista_t *lista = calloc(1, sizeof(lista_t));
+  if (!lista) {
     return NULL;
+  }
+
+  return lista;
 }
 
-int lista_insertar(lista_t* lista, void* elemento){
-    return 0;
-}
-
-int lista_insertar_en_posicion(lista_t* lista, void* elemento, size_t posicion){
-    return 0;
-}
-
-int lista_borrar(lista_t* lista){
     return 0;
 }
 
