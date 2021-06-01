@@ -12,7 +12,28 @@ lista_t *lista_crear() {
   return lista;
 }
 
-    return 0;
+int lista_insertar(lista_t *lista, void *elemento) {
+  if (!lista) {
+    return -1;
+  }
+  nodo_t *nuevo_nodo = calloc(1, sizeof(nodo_t));
+  if (!nuevo_nodo) {
+    return -1;
+  }
+
+  nuevo_nodo->elemento = elemento;
+  if (!lista->nodo_inicio) {
+    lista->nodo_inicio = nuevo_nodo;
+  } else {
+    lista->nodo_fin->siguiente = nuevo_nodo;
+  }
+
+  lista->nodo_fin = nuevo_nodo;
+  lista->cantidad++;
+
+  return 0;
+}
+
 }
 
 int lista_borrar_de_posicion(lista_t* lista, size_t posicion){
