@@ -1,4 +1,7 @@
 #include "lista.h"
+#include <features.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 lista_t* lista_crear(){
     lista_t * lista = calloc(1, sizeof(lista_t));
