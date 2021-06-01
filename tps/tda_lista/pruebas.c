@@ -211,6 +211,101 @@ void DadaUnaListaConUnElemento_CuandoBorroElUltimoElemento_EntoncesLaListaQuedaV
   free(lista);
 }
 
+// Borrar elemento en posicion
+// Al borrar dismiuir canditad
+void DadaListaYPosicion_CuandoBorroElementoEnPosicion_EntoncesLaListaDisminuyeSuCantidad() {
+  lista_t *lista = lista_crear();
+  void *elemento_uno = (void *)1;
+  void *elemento_dos = (void *)2;
+  void *elemento_tres = (void *)3;
+  void *elemento_cuatro = (void *)4;
+  lista_insertar(lista, elemento_uno);
+  lista_insertar(lista, elemento_dos);
+  lista_insertar(lista, elemento_tres);
+  lista_insertar(lista, elemento_cuatro);
+
+  lista_borrar_de_posicion(lista, 0);
+  pa2m_afirmar(lista->cantidad == 3, "La lista tiene 3 elementos 3/4");
+  lista_borrar_de_posicion(lista, 1);
+  pa2m_afirmar(lista->cantidad == 2, "La lista tiene 2 elementos 2/4");
+  lista_borrar_de_posicion(lista, 1);
+  pa2m_afirmar(lista->cantidad == 1, "La lista tiene 1 elementos 1/4");
+  lista_borrar_de_posicion(lista, 10);
+  pa2m_afirmar(lista->cantidad == 0, "La lista tiene 0 elementos 0/4");
+
+  free(lista);
+}
+// Si la posicion es mayor a la cantidad entonces borrar ultimo
+void DadaListaYPosicionMayorACantidad_CuandoIntentoBorrarElementoEnPosicio_EntocesBorroElUltimoElemento() {
+  lista_t *lista = lista_crear();
+  void *elemento_uno = (void *)1;
+  void *elemento_dos = (void *)2;
+  void *elemento_tres = (void *)3;
+  lista_insertar(lista, elemento_uno);
+  lista_insertar(lista, elemento_dos);
+  lista_insertar(lista, elemento_tres);
+
+  lista_borrar_de_posicion(lista, 10);
+  pa2m_afirmar(
+      lista->nodo_fin->elemento == elemento_dos,
+      "Se borro el ultimo elemento cuando paso posicion mayor a cantidad");
+  lista_borrar_de_posicion(lista, 10);
+  pa2m_afirmar(lista->nodo_fin->elemento == elemento_uno,
+               "Se borro el ultimo elemento de la lista");
+  pa2m_afirmar(lista->nodo_fin->elemento == lista->nodo_inicio->elemento,
+               "El nodo_fin y nodo_incio apuntan al mismo nodo, cantidad = 1");
+  lista_borrar_de_posicion(lista, 10);
+  pa2m_afirmar(lista->nodo_fin == NULL,
+               "Lista sin elementos, nodo_fin apunta a NULL");
+  pa2m_afirmar(lista->nodo_inicio == NULL,
+               "Lista sin elementos, nodo_inicio apunta a NULL");
+
+  free(lista);
+}
+// Borrar en lista vacia
+void DadaListaVaciaYPosicion_CuandoIntentoBorrarElementoEnPosicion_EntoncesObtengoMenosUno() {
+  lista_t *lista = lista_crear();
+  pa2m_afirmar(lista_borrar_de_posicion(lista, 10) == -1,
+               "Borrar elemento en posicion 10 en lista vacia devuelve -1");
+  pa2m_afirmar(lista_borrar_de_posicion(lista, 0) == -1,
+               "Borrar elemento en posicion 0 en lista vacia devuelve -1");
+
+  free(lista);
+}
+
+// Borrar en lista nula
+void DadaListaNulaYPosicion_CuandoIntentoBorrarElementoEnPosicion_EntoncesObtengoMenosUno() {
+  pa2m_afirmar(lista_borrar_de_posicion(NULL, 10) == -1,
+               "Borrar elemento en posicion 10 en lista nula devuelve -1");
+  pa2m_afirmar(lista_borrar_de_posicion(NULL, 0) == -1,
+               "Borrar elemento en posicion 0 en lista nula devuelve -1");
+}
+
+// Cuando borro un elemento en el medio los nodos siguen conectados
+void DadaListaYPosicion_CuandoBorroElementoEnPosicion_EntoncesLosNodosSiguenConectados() {
+  lista_t *lista = lista_crear();
+  void *elemento_uno = (void *)1;
+  void *elemento_dos = (void *)2;
+  void *elemento_tres = (void *)3;
+  void *elemento_cuatro = (void *)4;
+  lista_insertar(lista, elemento_uno);
+  lista_insertar(lista, elemento_dos);
+  lista_insertar(lista, elemento_tres);
+  lista_insertar(lista, elemento_cuatro);
+
+  lista_borrar_de_posicion(lista, 2);
+  pa2m_afirmar(lista->nodo_inicio->siguiente->elemento == elemento_dos &&
+                   lista->nodo_inicio->siguiente->siguiente->elemento ==
+                       elemento_cuatro,
+               "Despues de borrar elemento en posicion 2 los elementos que "
+               "antes estaban en posicion 1 y 3 se unen");
+
+  free(lista->nodo_inicio->siguiente->siguiente);
+  free(lista->nodo_inicio->siguiente);
+  free(lista->nodo_inicio);
+  free(lista);
+}
+
 
 int main() {
   pa2m_nuevo_grupo("Crear lista");
@@ -226,6 +321,20 @@ int main() {
   DadaUnaListaUnElementoYZeroComoPosicion_CuandoIngresoElementoAListaEnPosicion_EntoncesSeLeAgregaElNodoDelElementoAlPrincipio();
   DadaUnaListaUnElementoYUnaPosicionMayorALaCantidad_CuandoIngresoElementoAListaEnPosicion_EntoncesSeAgregaNodoDelElementoAlFinal();
   DadaUnaListaUnElementoYUnaPosicionTresVeces_CuandoIngresoElementoAListaEnPosicion_EntoncesLaListaContieneTresNodosEnlazados();
+
+  pa2m_nuevo_grupo("Borrar ultimo elemento de lista");
+  DadaUnaListaVacia_CuandoIntentoBorrarElUltimoElemento_EntoncesObtengoMenosUno();
+  DadaUnaListaNula_CuandoIntentoBorrarElUltimoElemento_EntoncesObtengoMenosUno();
+  DadaUnaLista_CuandoBorroElUltimoElemento_EntoncesLaCantidadDeNodosDisminuye();
+  DadaUnaLista_CuandoBorroElUltimoElemento_EntoncesLaListaCambiaDeUltimoElemento();
+  DadaUnaListaConUnElemento_CuandoBorroElUltimoElemento_EntoncesLaListaQuedaVaciaYConSusNodosApundandoANULL();
+
+  pa2m_nuevo_grupo("Borrar elemento en posicion");
+  DadaListaYPosicion_CuandoBorroElementoEnPosicion_EntoncesLosNodosSiguenConectados();
+  DadaListaNulaYPosicion_CuandoIntentoBorrarElementoEnPosicion_EntoncesObtengoMenosUno();
+  DadaListaVaciaYPosicion_CuandoIntentoBorrarElementoEnPosicion_EntoncesObtengoMenosUno();
+  DadaListaYPosicionMayorACantidad_CuandoIntentoBorrarElementoEnPosicio_EntocesBorroElUltimoElemento();
+  DadaListaYPosicion_CuandoBorroElementoEnPosicion_EntoncesLaListaDisminuyeSuCantidad();
 
 
   return pa2m_mostrar_reporte();

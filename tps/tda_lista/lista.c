@@ -93,7 +93,31 @@ int lista_borrar(lista_t *lista) {
   return 0;
 }
 
+int lista_borrar_de_posicion(lista_t *lista, size_t posicion) {
+  if (!lista || lista->cantidad == 0) {
+    return -1;
+  }
+  if (lista->cantidad == 1) {
+    free(lista->nodo_inicio);
+    lista->nodo_inicio = NULL;
+    lista->nodo_fin = NULL;
+    lista->cantidad = 0;
     return 0;
+  }
+  if (posicion == 0) {
+    nodo_t *nodo_borrar = lista->nodo_inicio;
+    lista->nodo_inicio = nodo_borrar->siguiente;
+    free(nodo_borrar);
+  } else if (posicion >= lista->cantidad) {
+    return lista_borrar(lista);
+  } else {
+    nodo_t *nodo_anterior = recorrer_nodos(lista->nodo_inicio, posicion - 1);
+    nodo_t *nodo_borrar = nodo_anterior->siguiente;
+    nodo_anterior->siguiente = nodo_borrar->siguiente;
+    free(nodo_borrar);
+  }
+  lista->cantidad--;
+  return 0;
 }
 
 void* lista_elemento_en_posicion(lista_t* lista, size_t posicion){
