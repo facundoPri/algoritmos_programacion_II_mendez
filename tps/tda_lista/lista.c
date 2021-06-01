@@ -34,6 +34,41 @@ int lista_insertar(lista_t *lista, void *elemento) {
   return 0;
 }
 
+nodo_t *recorrer_nodos(nodo_t *nodo, size_t posicion) {
+  if (posicion == 0 || nodo->siguiente == NULL) {
+    return nodo;
+  }
+  return recorrer_nodos(nodo->siguiente, posicion - 1);
+}
+
+int lista_insertar_en_posicion(lista_t *lista, void *elemento,
+                               size_t posicion) {
+  if (!lista) {
+    return -1;
+  }
+  nodo_t *nuevo_nodo = calloc(1, sizeof(nodo_t));
+  if (!nuevo_nodo) {
+    return -1;
+  }
+  nuevo_nodo->elemento = elemento;
+
+  if (posicion >= lista->cantidad) {
+    free(nuevo_nodo);
+    return lista_insertar(lista, elemento);
+  }
+
+  if (posicion == (size_t)0) {
+    nuevo_nodo->siguiente = lista->nodo_inicio;
+    lista->nodo_inicio = nuevo_nodo;
+  } else {
+    nodo_t *nodo_anterior = recorrer_nodos(lista->nodo_inicio, posicion - 1);
+
+    nuevo_nodo->siguiente = nodo_anterior->siguiente;
+    nodo_anterior->siguiente = nuevo_nodo;
+  }
+
+  lista->cantidad++;
+  return 0;
 }
 
 int lista_borrar_de_posicion(lista_t* lista, size_t posicion){
