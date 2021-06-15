@@ -1,0 +1,39 @@
+#+TITLE: 1 06 2021
+* Arbol B
+** Caracterizticas
+*** Poca profundidad
+*** Acceso poco costoso
+*** Claves ordenadas
+*** Un nodo con k claves tiene como maximo m = k + 1 descendientes
+*** La candidad minima de claves es [k/2] (excepto la raiz)
+*** La cantidad minima de descendientes es [m/2] (excepto hojas y raiz)
+** Insercion
+*** Siempre se inserta en los nodos hoja
+*** Cuando llegamos al maximo del nodo, agarramos el valor del medio, lo acendemos a un nodo de arriba y la mirad derecha e izquierda van para nodos distintos
+** Eliminacion
+*** Underflow cuando el nodo tiene menos de la mitad de claves
+**** Podemos ahcer una redistribuicion
+**** Subo la clave mas chica/grande del hermano derecho/izquierdo y bajo el padre que separa ambos
+**** Si quiero hacer redistribuicion en el proceso terminaria haciendo underflow en el nodo de al lado hago concatenacion
+**** Concatenacion
+***** Uno al nodo agectado con algun hermano y el padre que separa ambos
+*** Eliminando la ultima clave de la raiz
+**** Busco el primer superior, lo intercanvio y elimino el que quiero
+* Arbol Rojo - Negro
+** Caracteristicas
+*** Un arbol Rojo-Negro es un arbol binario de busqueda auto-balanceado
+*** Cada nodo de este arbol posee una informacion extra que es el color del nodo, este puede ser rojo o negro
+*** La utilizacion de los colores es lo que hace que el arbol pueda quedar autobalanceado durante las inserciones o las eliminacines de nodos
+*** El arbol Rojo-Negro es un arbol binario de busqueda auto-balanceado
+*** Cada nodo de este arbol posee una informacion extra que es el color del nodo, este puede ser rojo o negro
+*** El equilibrio se conserva pintando cada nodo del arbol con uno de los dos colores de maner aque satisfaga ciertas propiedades, que en conjunto restingen el desequilibrio en que el arbol puede caer en el peor de los casos
+*** Las propiedades estan diseñadas de tal manera que esta reorganizacion y cambio de color se puede realizar de manera eficiente
+*** El equilibrio del arbol no es perfecto, pero es lo suficientemente buen como paara permitir al minimo una insercion y eliminacion de o(logn)
+** Definicion
+*** Un arbol Rojo-egro debe satisfacer los requisitos del arbol binario de busqueda y ademas:
+*** Todo nodo es bien rojo o bien negro
+*** La raiz es negra
+*** todas las hojas (NULL) son negras
+*** Todo nodo roo debe tener dos nodos hijos negros, No hay dos nodos rojos adyacentes
+*** Cualquier camino desde un nodo dado a sus hojas descendientes contienen el mismo numero de nodos negros
+*** El numero de nodos negros desde el nodo raiz a un nodo es denominada la produncidad
