@@ -127,65 +127,126 @@ void *lista_elemento_en_posicion(lista_t *lista, size_t posicion) {
   return recorrer_nodos(lista->nodo_inicio, posicion)->elemento;
 }
 
-void* lista_ultimo(lista_t* lista){
+void *lista_ultimo(lista_t *lista) {
+  if (!lista || lista->cantidad == 0)
     return NULL;
+
+  return lista->nodo_fin->elemento;
 }
 
-bool lista_vacia(lista_t* lista){
+bool lista_vacia(lista_t *lista) {
+  if (!lista || (lista->cantidad == 0 && lista->nodo_inicio == NULL &&
+                 lista->nodo_fin == NULL))
+    return true;
+  return false;
+}
+
+size_t lista_elementos(lista_t *lista) {
+  if (!lista || lista->cantidad == 0)
+    return 0;
+
+  return lista->cantidad;
+}
+
+int lista_apilar(lista_t *lista, void *elemento) {
+  return lista_insertar_en_posicion(lista, elemento, 0);
+}
+
+int lista_desapilar(lista_t *lista) {
+  return lista_borrar_de_posicion(lista, 0);
+}
+
+void *lista_tope(lista_t *lista) {
+  if (!lista || lista->cantidad == 0)
+    return NULL;
+
+  return lista->nodo_inicio->elemento;
+}
+
+int lista_encolar(lista_t *lista, void *elemento) {
+  if (!lista) {
+    return -1;
+  }
+
+  return lista_insertar(lista, elemento);
+}
+
+int lista_desencolar(lista_t *lista) {
+  return lista_borrar_de_posicion(lista, 0);
+}
+
+void *lista_primero(lista_t *lista) {
+  if (!lista || lista_vacia(lista))
+    return NULL;
+  return lista->nodo_inicio->elemento;
+}
+
+void lista_destruir(lista_t *lista) {
+  if (!lista)
+    return;
+  size_t cantidad = lista->cantidad;
+  for (size_t i = 0; i < cantidad; i++) {
+    lista_borrar_de_posicion(lista, 0);
+  }
+  free(lista);
+}
+
+lista_iterador_t *lista_iterador_crear(lista_t *lista) {
+  if (!lista)
+    return NULL;
+
+  lista_iterador_t *lista_iterador = calloc(1, sizeof(lista_iterador_t));
+  if (!lista_iterador)
+    return NULL;
+
+  lista_iterador->corriente = lista->nodo_inicio;
+  lista_iterador->lista = lista;
+  return lista_iterador;
+}
+
+bool lista_iterador_tiene_siguiente(lista_iterador_t *iterador) {
+  if (!iterador)
     return false;
-}
-
-size_t lista_elementos(lista_t* lista){
-    return 0;
-}
-
-int lista_apilar(lista_t* lista, void* elemento){
-    return 0;
-}
-
-int lista_desapilar(lista_t* lista){
-    return 0;
-}
-
-void* lista_tope(lista_t* lista){
-    return NULL;
-}
-
-int lista_encolar(lista_t* lista, void* elemento){
-    return 0;
-}
-
-int lista_desencolar(lista_t* lista){
-    return 0;
-}
-
-void* lista_primero(lista_t* lista){
-    return NULL;
-}
-
-void lista_destruir(lista_t* lista){
-}
-
-lista_iterador_t* lista_iterador_crear(lista_t* lista){
-        return NULL;
-}
-
-bool lista_iterador_tiene_siguiente(lista_iterador_t* iterador){
+  if (!iterador->corriente)
     return false;
+  return true;
 }
 
-bool lista_iterador_avanzar(lista_iterador_t* iterador){
+bool lista_iterador_avanzar(lista_iterador_t *iterador) {
+  if (!iterador)
     return false;
+  if (!iterador->corriente)
+    return false;
+
+  iterador->corriente = iterador->corriente->siguiente;
+  if (!iterador->corriente)
+    return false;
+  return true;
 }
 
-void* lista_iterador_elemento_actual(lista_iterador_t* iterador){
+void *lista_iterador_elemento_actual(lista_iterador_t *iterador) {
+  if (!iterador)
     return NULL;
+  if (!iterador->corriente)
+    return iterador->corriente;
+  return iterador->corriente->elemento;
 }
 
-void lista_iterador_destruir(lista_iterador_t* iterador){
+void lista_iterador_destruir(lista_iterador_t *iterador) { free(iterador); }
 
-}
-
-size_t lista_con_cada_elemento(lista_t* lista, bool (*funcion)(void*, void*), void *contexto){
+size_t lista_con_cada_elemento(lista_t *lista, bool (*funcion)(void *, void *),
+                               void *contexto) {
+  if (!lista || !funcion)
     return 0;
+  size_t i = 0;
+  nodo_t *nodo_actual = lista->nodo_inicio;
+  while (nodo_actual) {
+    i++;
+    bool resultado = funcion(nodo_actual->elemento, contexto);
+    if (!resultado) {
+      break;
+    }
+    nodo_actual = nodo_actual->siguiente;
+  }
+  return i;
 }
