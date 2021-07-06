@@ -1,0 +1,42 @@
+#+TITLE: 1er_parcial_20202c
+* Ejercicio 1
+** Variante 1
+1- a<b<c
+2
+* Ejercicios 2
+** Parte A
+*** Variante 1
+1. Lo que nos permite el contrato es saber lo que hay que meter y lo que vamos a obtener
+2. Depende del caso, ya que se puede dar un caso donde con vector estatico cumple nuestas necesidades y no vale la pena la extra complejidad de la implementacion con vector dinamico o nodos
+3.
+** Parte B
+*** Variante 1
+#+begin_src C
+/* * Agregará una ciudad al mapa, justo después de aquella cuyo nombre coincida
+ ,* con el recibido por parámetro. * Devolverá 0 si pudo agregarla o -1 si no. *
+ ,* Ejemplo: * Supongamos que queremos agregar la ciudad Azul luego de la ciudad
+ ,* Roja. * A su vez, la ciudad Roja tiene como siguiente a la ciudad Verde.  *
+ ,* La ciudad Roja tendrá como siguiente a la ciudad Azul. * La ciudad Azul
+ ,* tendrá como siguiente a la ciudad Verde. * La ciudad Azul tendrá como
+ ,* anterior a la ciudad Roja. * La ciudad Verde tendrá como anterior a la ciudad
+ ,* Azul. */
+#include <string.h>
+ciudad_t *buscar_ciudad(ciudad_t* ciudad, char nombre_ciudad[MAX_NOMBRE]){
+    if (strcmp(ciudad->nombre, nombre_ciudad)==0){
+        return ciudad;
+    }
+    return buscar_ciudad(ciudad->proxima,nombre_ciudad);
+}
+
+int agregar_ciudad(mapa_t* mapa, ciudad_t* ciudad_nueva, char ciudad_anterior[MAX_NOMBRE]){
+   if(!mapa ||!ciudad_nueva ||!ciudad_anterior) return 0;
+   ciudad_t *ciudad = buscar_ciudad(mapa->origen, ciudad_anterior);
+   ciudad_nueva->proxima = ciudad->proxima;
+   ciudad->proxima->anterior = ciudad_nueva;
+   ciudad_nueva->anterior = ciudad;
+   ciudad->proxima = ciudad_nueva;
+}
+#+end_src
+* Ejercicio 3
+** Variante 1
+1.
