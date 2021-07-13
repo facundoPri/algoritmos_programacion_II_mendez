@@ -53,37 +53,37 @@ void verificar_vehiculo(hash_t *garage, const char *patente,
 }
 
 int main() {
-  hash_t *garage = hash_crear(destruir_string, 3);
+  hash_t *hash = hash_crear(destruir_string, 10);
 
   printf("Agrego autos al garage\n");
 
-  guardar_vehiculo(garage, "AC123BD", "Auto de Mariano");
-  guardar_vehiculo(garage, "OPQ976", "Auto de Lucas");
-  guardar_vehiculo(garage, "A421ACB", "Moto de Manu");
-  guardar_vehiculo(garage, "AA442CD", "Auto de Guido");
-  guardar_vehiculo(garage, "AC152AD", "Auto de Agustina");
-  guardar_vehiculo(garage, "DZE443", "Auto de Jonathan");
-  guardar_vehiculo(garage, "AA436BA", "Auto de Gonzalo");
-  guardar_vehiculo(garage, "QDM443", "Auto de Daniela");
-  guardar_vehiculo(garage, "BD123AC", "Auto de Pablo");
-  guardar_vehiculo(garage, "CD442AA", "Auto de Micaela");
-  guardar_vehiculo(garage, "PQO697", "Auto de Juan");
-  guardar_vehiculo(garage, "DZE443", "Auto de Jonathan otra vez");
-  guardar_vehiculo(garage, "AC152AD", "Auto de Agustina otra vez");
+  guardar_vehiculo(hash, "AC123BD", "Auto de Mariano");
+  guardar_vehiculo(hash, "OPQ976", "Auto de Lucas");
+  guardar_vehiculo(hash, "A421ACB", "Moto de Manu");
+  guardar_vehiculo(hash, "AA442CD", "Auto de Guido");
+  guardar_vehiculo(hash, "AC152AD", "Auto de Agustina");
+  guardar_vehiculo(hash, "DZE443", "Auto de Jonathan");
+  guardar_vehiculo(hash, "AA436BA", "Auto de Gonzalo");
+  guardar_vehiculo(hash, "QDM443", "Auto de Daniela");
+  guardar_vehiculo(hash, "BD123AC", "Auto de Pablo");
+  guardar_vehiculo(hash, "CD442AA", "Auto de Micaela");
+  guardar_vehiculo(hash, "PQO697", "Auto de Juan");
+  guardar_vehiculo(hash, "DZE443", "Auto de Jonathan otra vez");
+  guardar_vehiculo(hash, "AC152AD", "Auto de Agustina otra vez");
 
-  verificar_vehiculo(garage, "QDM443", true);
-  verificar_vehiculo(garage, "PQO697", true);
+  verificar_vehiculo(hash, "QDM443", true);
+  verificar_vehiculo(hash, "PQO697", true);
 
-  quitar_vehiculo(garage, "QDM443");
-  quitar_vehiculo(garage, "PQO697");
+  quitar_vehiculo(hash, "QDM443");
+  quitar_vehiculo(hash, "PQO697");
 
-  verificar_vehiculo(garage, "QDM443", false);
-  verificar_vehiculo(garage, "PQO697", false);
+  verificar_vehiculo(hash, "QDM443", false);
+  verificar_vehiculo(hash, "PQO697", false);
 
-  size_t impresas = hash_con_cada_clave(garage, mostrar_patente, NULL);
+  size_t impresas = hash_con_cada_clave(hash, mostrar_patente, NULL);
   printf("Se mostraron %zu patentes con el iterador interno\n\n", impresas);
 
-  hash_destruir(garage);
+  hash_destruir(hash);
 
   return 0;
 }

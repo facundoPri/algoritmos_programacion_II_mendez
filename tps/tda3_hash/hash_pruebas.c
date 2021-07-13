@@ -79,12 +79,14 @@ void DadoElementoConClaveYaExistente_CuandoIntentoInsertarElemento_EntoncesFunci
   pa2m_afirmar(hash_cantidad(hash) == 2, "Hash contiene 2 elementos");
   pa2m_afirmar(hash_insertar(hash, "1", (void *)4) == 0,
                "Se inserto nuevo valor con misma clave [1]");
-  pa2m_afirmar(hash_cantidad(hash) == 2,
-               "Hash sigue conteniendo 2 elementos [1]");
+  size_t cantidad = hash_cantidad(hash);
+  printf("Cantidad: %lu\n", cantidad);
+  pa2m_afirmar(cantidad == 2, "Hash sigue conteniendo 2 elementos [1]");
   pa2m_afirmar(hash_insertar(hash, "2", (void *)4) == 0,
                "Se inserto nuevo valor con misma clave [2]");
-  pa2m_afirmar(hash_cantidad(hash) == 2,
-               "Hash sigue conteniendo 2 elementos [2]");
+  cantidad = hash_cantidad(hash);
+  printf("Cantidad: %lu\n", cantidad);
+  pa2m_afirmar(cantidad == 2, "Hash sigue conteniendo 2 elementos [2]");
 
   hash_destruir(hash);
 }
@@ -272,23 +274,24 @@ bool recorrer_hasta_clave(hash_t *hash, const char *clave, void *ultima_clave) {
 void DadoHashCon10Elementos_CuandoIteroLos10_EntoncesObtengo10() {
   hash_t *hash = hash_crear(NULL, 10);
 
-  hash_insertar(hash, "1", (void *)1);
-  hash_insertar(hash, "2", (void *)2);
-  hash_insertar(hash, "3", (void *)3);
-  hash_insertar(hash, "4", (void *)4);
-  hash_insertar(hash, "5", (void *)5);
-  hash_insertar(hash, "6", (void *)6);
-  hash_insertar(hash, "7", (void *)7);
-  hash_insertar(hash, "8", (void *)8);
-  hash_insertar(hash, "9", (void *)9);
-  hash_insertar(hash, "10", (void *)10);
+  hash_insertar(hash, "1", (void *)"1");
+  hash_insertar(hash, "2", (void *)"2");
+  hash_insertar(hash, "3", (void *)"3");
+  hash_insertar(hash, "4", (void *)"4");
+  hash_insertar(hash, "5", (void *)"5");
+  hash_insertar(hash, "6", (void *)"6");
+  hash_insertar(hash, "7", (void *)"7");
+  hash_insertar(hash, "8", (void *)"8");
+  hash_insertar(hash, "9", (void *)"9");
+  hash_insertar(hash, "9", (void *)"11");
+  hash_insertar(hash, "10", (void *)"10");
 
   size_t cantidad_iterada = hash_con_cada_clave(hash, NULL, NULL);
   pa2m_afirmar(
       cantidad_iterada == 10,
       "Cuando no paso funcion se itera la cantidad de elementos en el hash");
 
-  // hash_con_cada_clave(hash, mostrar_par, NULL);
+  hash_con_cada_clave(hash, mostrar_par, NULL);
 
   cantidad_iterada = hash_con_cada_clave(hash, recorrer_hasta_clave, "5");
   pa2m_afirmar(

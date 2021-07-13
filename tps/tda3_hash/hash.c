@@ -237,8 +237,8 @@ int hash_insertar(hash_t *hash, const char *clave, void *elemento) {
     par_t *actual = hash->tabla[posicion];
 
     if (actual) {
-      actual->elemento = elemento;
-      return EXITO;
+      destruir_par(hash->destructor, actual);
+      hash->cantidad--;
     }
     par_t *par = crear_par(clave, elemento);
     if (!par)
