@@ -72,6 +72,8 @@ char *duplicar_string(const char *s) {
  * devolverlo.
  */
 par_t *crear_par(const char *clave, void *elemento) {
+  if (!clave)
+    return NO_EXISTE;
   par_t *par = malloc(sizeof(par_t));
   if (!par)
     return NO_EXISTE;
@@ -91,6 +93,8 @@ par_t *crear_par(const char *clave, void *elemento) {
  * error.
  */
 int reinsertar_elementos(hash_t *hash, par_t **tabla, size_t capacidad_tabla) {
+  if (!hash || !tabla || !capacidad_tabla || capacidad_tabla == 0)
+    return ERROR;
   for (int i = 0; i < capacidad_tabla; i++) {
     if (tabla[i]) {
       par_t *actual = tabla[i];
@@ -108,6 +112,8 @@ int reinsertar_elementos(hash_t *hash, par_t **tabla, size_t capacidad_tabla) {
  * usada.
  */
 void destruir_par(hash_destruir_dato_t destructor, par_t *par) {
+  if (!par)
+    return;
   if (destructor) {
     destructor(par->elemento);
   }
@@ -123,6 +129,8 @@ void destruir_par(hash_destruir_dato_t destructor, par_t *par) {
 void destruir_tabla(par_t **tabla, size_t capacidad_tabla,
                     size_t cantidad_elementos,
                     hash_destruir_dato_t destructor) {
+  if (!tabla)
+    return;
   for (int i = 0; i < capacidad_tabla && cantidad_elementos != 0; i++) {
     if (tabla[i]) {
       par_t *actual = tabla[i];
@@ -138,6 +146,8 @@ void destruir_tabla(par_t **tabla, size_t capacidad_tabla,
  * anterior devuelve -1 en caso de error y 0 en caso de exito.
  */
 int rehashear(hash_t *hash) {
+  if (!hash)
+    return ERROR;
   // Agrandar capacidad
   size_t capacidad_antigua = hash->capacidad;
   size_t cantidad_antigua = hash->cantidad;
@@ -175,6 +185,8 @@ int rehashear(hash_t *hash) {
  */
 par_t *buscar_elemento_desde_posicion(hash_t *hash, const char *clave,
                                       size_t posicion) {
+  if (!hash || !clave)
+    return NO_EXISTE;
   par_t *actual = hash->tabla[posicion];
   while (actual && strcmp(actual->clave, clave) != IGUALES) {
     posicion = (posicion + 1) % hash->capacidad;
@@ -187,9 +199,12 @@ par_t *buscar_elemento_desde_posicion(hash_t *hash, const char *clave,
  * Recibe un hash, una clave, y la posicion desde donde se empieza a buscar.
  * Devuelve la posicion donde se encuentra el elemento con misma clave o la
  * posicion donde se encontro un espacio libre en la memoria.
+ * Caso error devuelve 0.
  */
 size_t buscar_siguiente_elemento_posicion(hash_t *hash, const char *clave,
                                           size_t posicion) {
+  if (!hash || !clave)
+    return 0;
   par_t *actual = hash->tabla[posicion];
   while (actual && strcmp(actual->clave, clave) != IGUALES) {
     posicion = (posicion + 1) % hash->capacidad;
@@ -241,6 +256,8 @@ int hash_insertar(hash_t *hash, const char *clave, void *elemento) {
  * encontrarse con otro espacio vacio en la tabla del hash
  */
 void reodenar_elementos_siguientes(hash_t *hash, size_t posicion) {
+  if (!hash)
+    return;
   size_t posicion_vacia = posicion;
   posicion++;
   par_t *actual = hash->tabla[posicion];
@@ -304,11 +321,15 @@ size_t hash_cantidad(hash_t *hash) {
 }
 
 bool hash_contiene(hash_t *hash, const char *clave) {
+  if (!hash)
+    return false;
   void *elemento_encontrado = hash_obtener(hash, clave);
   return elemento_encontrado;
 }
 
 void hash_destruir(hash_t *hash) {
+  if (!hash)
+    return;
   destruir_tabla(hash->tabla, hash->capacidad, hash->cantidad,
                  hash->destructor);
   free(hash);
