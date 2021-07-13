@@ -1,0 +1,6 @@
+make valgrind --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/facupri/Documentos/Facultad/algoritmos_programacion_II_mendez/tps/tda3_hash'
+gcc -g -O0 -Wall -Werror -std=c99 -I cabeceras hash.c hash_pruebas.c -o pruebas 2>&1
+valgrind --leak-check=full --track-origins=yes --show-reachable=yes --error-exitcode=2 ./pruebas 2>&1
+make: Leaving directory '/home/facupri/Documentos/Facultad/algoritmos_programacion_II_mendez/tps/tda3_hash'
+ 

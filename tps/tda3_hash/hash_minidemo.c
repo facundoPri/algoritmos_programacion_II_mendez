@@ -3,55 +3,57 @@
 #include <stdlib.h>
 #include <string.h>
 
-//strdup no lo podemos usar porque es POSIX pero no es C99
-char* duplicar_string(const char* s){
-  if(!s)
+// strdup no lo podemos usar porque es POSIX pero no es C99
+char *duplicar_strings(const char *s) {
+  if (!s)
     return NULL;
 
-  char* p = malloc(strlen(s)+1);
-  strcpy(p,s);
+  char *p = malloc(strlen(s) + 1);
+  strcpy(p, s);
   return p;
 }
 
-void destruir_string(void* elemento){
-  if(elemento){
-    printf("(Destructor) Libero el vehiculo: %s\n", (char*)elemento);
+void destruir_string(void *elemento) {
+  if (elemento) {
+    printf("(Destructor) Libero el vehiculo: %s\n", (char *)elemento);
     free(elemento);
   }
 }
 
-bool mostrar_patente(hash_t* hash, const char* clave, void* aux){
-  if(!clave)
+bool mostrar_patente(hash_t *hash, const char *clave, void *aux) {
+  if (!clave)
     return true;
 
-  aux=aux;
-  hash=hash;
+  aux = aux;
+  hash = hash;
 
   printf("Patente en el hash: %s\n", clave);
 
   return false;
 }
 
-void guardar_vehiculo(hash_t* garage, const char* patente, const char* descripcion){
-  int retorno = hash_insertar(garage, patente, duplicar_string(descripcion));
+void guardar_vehiculo(hash_t *garage, const char *patente,
+                      const char *descripcion) {
+  int retorno = hash_insertar(garage, patente, duplicar_strings(descripcion));
   printf("Guardando vehiculo patente %s (%s): ", patente, descripcion);
-  printf("%s\n", retorno==0?"OK":"ERROR");
+  printf("%s\n", retorno == 0 ? "OK" : "ERROR");
 }
 
-void quitar_vehiculo(hash_t* garage, const char* patente){
+void quitar_vehiculo(hash_t *garage, const char *patente) {
   int retorno = hash_quitar(garage, patente);
   printf("Retirando vehiculo patente %s: ", patente);
-  printf("%s\n", retorno==0?"OK":"ERROR");
+  printf("%s\n", retorno == 0 ? "OK" : "ERROR");
 }
 
-void verificar_vehiculo(hash_t* garage, const char* patente, bool deberia_existir){
+void verificar_vehiculo(hash_t *garage, const char *patente,
+                        bool deberia_existir) {
   printf("Verifico el vehiculo patente %s: ", patente);
   bool retorno = hash_contiene(garage, patente);
-  printf("%s\n", (retorno==deberia_existir)?"OK":"ERROR");
+  printf("%s\n", (retorno == deberia_existir) ? "OK" : "ERROR");
 }
 
-int main(){
-  hash_t* garage = hash_crear(destruir_string, 3);
+int main() {
+  hash_t *garage = hash_crear(destruir_string, 3);
 
   printf("Agrego autos al garage\n");
 
@@ -72,7 +74,6 @@ int main(){
   verificar_vehiculo(garage, "QDM443", true);
   verificar_vehiculo(garage, "PQO697", true);
 
-  
   quitar_vehiculo(garage, "QDM443");
   quitar_vehiculo(garage, "PQO697");
 
