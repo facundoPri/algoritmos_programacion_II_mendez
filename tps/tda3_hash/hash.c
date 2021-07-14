@@ -24,23 +24,7 @@ struct hash {
   par_t **tabla;
 };
 
-hash_t *hash_crear(hash_destruir_dato_t destruir_elemento,
-                   size_t capacidad_inicial) {
-  if (capacidad_inicial < CAPACIDAD_MINIMA) {
-    capacidad_inicial = CAPACIDAD_MINIMA;
-  }
-  hash_t *hash = calloc(1, sizeof(hash_t));
-  if (!hash)
-    return NO_EXISTE;
-  hash->capacidad = capacidad_inicial;
-  hash->destructor = destruir_elemento;
-  hash->tabla = calloc(capacidad_inicial, sizeof(par_t));
-  if (!hash->tabla) {
-    free(hash);
-    return NO_EXISTE;
-  }
-  return hash;
-}
+// Fuciones auxiliares
 
 /*
  * Recibe una string y devuelve la suma de cada uno de los caracteres.
@@ -122,8 +106,8 @@ void destruir_par(hash_destruir_dato_t destructor, par_t *par) {
 }
 
 /*
- * Recibe la tabla se busca liberar de la memoria, el tamaño de esta tabla la
- * cantidad de elementos que se encuentra en la tabla y la funcion destructora.
+ * Recibe la tabla que se busca liberar de la memoria, el tamaño de esta, la
+ * cantidad de elementos contiene y la funcion destructora.
  * Libera la memoria llamando destruir_par, para cada par y libera la tabla.
  */
 void destruir_tabla(par_t **tabla, size_t capacidad_tabla,
@@ -141,7 +125,7 @@ void destruir_tabla(par_t **tabla, size_t capacidad_tabla,
 }
 
 /*
- * Recibe un hash, duplica el tamaño de su tabla y reinserta los elementos que
+ * Recibe una tabla hash, duplica su tamaño y reinserta los elementos que
  * antes estaban en la tabla, en caso de error el hash vuelve a su estado
  * anterior devuelve -1 en caso de error y 0 en caso de exito.
  */
@@ -180,11 +164,11 @@ int rehashear(hash_t *hash) {
 
 /*
  * Recibe un hash, una clave, y la posicion desde donde se empieza a buscar.
- * Devuelve el elemento encontrado con misma clave o NULL en caso que encuentre
+ * Devuelve el par encontrado con misma clave o NULL en caso que encuentre
  * un lugar vacio en la tabla del hash.
  */
-par_t *buscar_elemento_desde_posicion(hash_t *hash, const char *clave,
-                                      size_t posicion) {
+par_t *buscar_par_desde_posicion(hash_t *hash, const char *clave,
+                                 size_t posicion) {
   if (!hash || !clave)
     return NO_EXISTE;
   par_t *actual = hash->tabla[posicion];
@@ -197,12 +181,12 @@ par_t *buscar_elemento_desde_posicion(hash_t *hash, const char *clave,
 
 /*
  * Recibe un hash, una clave, y la posicion desde donde se empieza a buscar.
- * Devuelve la posicion donde se encuentra el elemento con misma clave o la
+ * Devuelve la posicion donde se encuentra el par con misma clave o la
  * posicion donde se encontro un espacio libre en la memoria.
  * Caso error devuelve 0.
  */
-size_t buscar_siguiente_elemento_posicion(hash_t *hash, const char *clave,
-                                          size_t posicion) {
+size_t buscar_posicion_siguiente_par(hash_t *hash, const char *clave,
+                                     size_t posicion) {
   if (!hash || !clave)
     return 0;
   par_t *actual = hash->tabla[posicion];
@@ -213,47 +197,11 @@ size_t buscar_siguiente_elemento_posicion(hash_t *hash, const char *clave,
   return posicion;
 }
 
-int hash_insertar(hash_t *hash, const char *clave, void *elemento) {
-  if (!hash || !clave)
-    return -1;
-
-  // Rehash
-  if ((((float)(hash->cantidad + 1) / (float)hash->capacidad) * 100) > 75) {
-    int estado = rehashear(hash);
-    if (estado)
-      return ERROR;
-  }
-
-  size_t clave_hash = funcion_hash(clave);
-  size_t posicion = clave_hash % hash->capacidad;
-
-  if (!hash->tabla[posicion]) {
-    par_t *par = crear_par(clave, elemento);
-    if (!par)
-      return ERROR;
-    hash->tabla[posicion] = par;
-  } else {
-    posicion = buscar_siguiente_elemento_posicion(hash, clave, posicion);
-    par_t *actual = hash->tabla[posicion];
-
-    if (actual) {
-      destruir_par(hash->destructor, actual);
-      hash->cantidad--;
-    }
-    par_t *par = crear_par(clave, elemento);
-    if (!par)
-      return ERROR;
-    hash->tabla[posicion] = par;
-  }
-  hash->cantidad++;
-  return EXITO;
-}
-
 /*
- * Recibe un hash y la posicion donde se borro un elemento
+ * Recibe un hash y la posicion donde se borro un elemento.
  * Busca elementos en la tabla que se encuentren fuera de orden, para rellenar
  * la posicion vacia. Hace esto con todos los elementos fuera de orden hasta
- * encontrarse con otro espacio vacio en la tabla del hash
+ * encontrarse con otro espacio vacio en la tabla del hash.
  */
 void reodenar_elementos_siguientes(hash_t *hash, size_t posicion) {
   if (!hash)
@@ -279,15 +227,80 @@ void reodenar_elementos_siguientes(hash_t *hash, size_t posicion) {
   }
 }
 
+/*
+ *Recibe un hash y una clave, devuelve la posicion de la clave en la tabla hash.
+ */
+size_t funcion_hash_posicion(hash_t *hash, const char *clave) {
+  if (!hash || !clave)
+    return 0;
+  size_t clave_hash = funcion_hash(clave);
+  size_t posicion = clave_hash % hash->capacidad;
+  return posicion;
+}
+
+// Primitivas
+
+hash_t *hash_crear(hash_destruir_dato_t destruir_elemento,
+                   size_t capacidad_inicial) {
+  if (capacidad_inicial < CAPACIDAD_MINIMA) {
+    capacidad_inicial = CAPACIDAD_MINIMA;
+  }
+  hash_t *hash = calloc(1, sizeof(hash_t));
+  if (!hash)
+    return NO_EXISTE;
+  hash->capacidad = capacidad_inicial;
+  hash->destructor = destruir_elemento;
+  hash->tabla = calloc(capacidad_inicial, sizeof(par_t));
+  if (!hash->tabla) {
+    free(hash);
+    return NO_EXISTE;
+  }
+  return hash;
+}
+
+int hash_insertar(hash_t *hash, const char *clave, void *elemento) {
+  if (!hash || !clave)
+    return -1;
+
+  // Rehash
+  if ((((float)(hash->cantidad + 1) / (float)hash->capacidad) * 100) >
+      FACTOR_CARGA) {
+    int estado = rehashear(hash);
+    if (estado)
+      return ERROR;
+  }
+  size_t posicion = funcion_hash_posicion(hash, clave);
+
+  if (!hash->tabla[posicion]) {
+    par_t *par = crear_par(clave, elemento);
+    if (!par)
+      return ERROR;
+    hash->tabla[posicion] = par;
+  } else {
+    posicion = buscar_posicion_siguiente_par(hash, clave, posicion);
+    par_t *actual = hash->tabla[posicion];
+
+    if (actual) {
+      destruir_par(hash->destructor, actual);
+      hash->cantidad--;
+    }
+    par_t *par = crear_par(clave, elemento);
+    if (!par)
+      return ERROR;
+    hash->tabla[posicion] = par;
+  }
+  hash->cantidad++;
+  return EXITO;
+}
+
 int hash_quitar(hash_t *hash, const char *clave) {
   if (!hash || !clave || hash->cantidad == 0)
     return ERROR;
   // Obtener posicion de elemento con funcion hash
-  size_t clave_hash = funcion_hash(clave);
-  size_t posicion = clave_hash % hash->capacidad;
+  size_t posicion = funcion_hash_posicion(hash, clave);
   // Buscar elemento, ya que puede estar corrido
   // Si encuentra un lugar en blanco, valor no existe
-  posicion = buscar_siguiente_elemento_posicion(hash, clave, posicion);
+  posicion = buscar_posicion_siguiente_par(hash, clave, posicion);
   par_t *actual = hash->tabla[posicion];
 
   if (!actual) {
@@ -306,10 +319,9 @@ int hash_quitar(hash_t *hash, const char *clave) {
 void *hash_obtener(hash_t *hash, const char *clave) {
   if (!hash || !clave)
     return NO_EXISTE;
-  size_t clave_hash = funcion_hash(clave);
-  size_t posicion = clave_hash % hash->capacidad;
+  size_t posicion = funcion_hash_posicion(hash, clave);
 
-  par_t *actual = buscar_elemento_desde_posicion(hash, clave, posicion);
+  par_t *actual = buscar_par_desde_posicion(hash, clave, posicion);
 
   return actual ? actual->elemento : NO_EXISTE;
 }

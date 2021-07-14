@@ -291,7 +291,7 @@ void DadoHashCon10Elementos_CuandoIteroLos10_EntoncesObtengo10() {
       cantidad_iterada == 10,
       "Cuando no paso funcion se itera la cantidad de elementos en el hash");
 
-  hash_con_cada_clave(hash, mostrar_par, NULL);
+  // hash_con_cada_clave(hash, mostrar_par, NULL);
 
   cantidad_iterada = hash_con_cada_clave(hash, recorrer_hasta_clave, "5");
   pa2m_afirmar(

@@ -6,23 +6,32 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Tue Jul 13 18:26:43 2021
+# Make data base, printed on Tue Jul 13 23:05:25 2021
 
 # Variables
 
 # environment
 GDK_BACKEND = x11
 # environment
+MOZ_ASSUME_USER_NS = 1
+# environment
 LC_ALL = C
 # environment
 NO_AT_BRIDGE = 1
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-678c114a-895d-420c-a481-a1d6eaafb98e.sock
+MOZ_CRASHREPORTER_DATA_DIRECTORY = /home/facupri/.mozilla/firefox/Crash Reports
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-7250e681-8b0b-47cb-87ee-8e478a59308b.sock
 # environment
 VSCODE_CWD = /home/facupri
 # environment
 WINDOWPATH = 2
 # environment
+XRE_RESTARTED_BY_PROFILE_MANAGER = 
+# environment
+MOZ_CRASHREPORTER_STRINGS_OVERRIDE = /usr/lib/firefox/browser/crashreporter-override.ini
+# environment
+ 
 GDM_LANG = es_AR.UTF-8
 # default
 MAKE_COMMAND := make
@@ -39,9 +48,13 @@ PWD = /home/facupri/Documentos/Facultad/algoritmos_programacion_II_mendez/tps/td
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
 # environment
+force_s3tc_enable = true
+# environment
 MAIL = /var/spool/mail/facupri
 # environment
 XDG_DATA_DIRS = /home/facupri/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
+# environment
+MOZ_LAUNCHED_CHILD = 
 # automatic
 ^D = $(patsubst %/,%,$(dir $^))
 # environment
@@ -95,7 +108,11 @@ XDG_SESSION_TYPE = x11
 # automatic
 *F = $(notdir $*)
 # environment
+XUL_APP_FILE = 
+# environment
 QT_QPA_PLATFORMTHEME = qt5ct
+# environment
+XRE_START_OFFLINE = 
 # environment
 CHROME_DESKTOP = codium-url-handler.desktop
 # environment
@@ -108,6 +125,8 @@ VSCODE_NLS_CONFIG = {"locale":"es-419","availableLanguages":{},"_languagePackSup
 BREAKPAD_DUMP_LOCATION = /home/facupri/.config/VSCodium/exthost Crash Reports
 # default
 MAKE_HOST := x86_64-pc-linux-gnu
+# environment
+MOZ_CRASHREPORTER_RESTART_ARG_0 = /usr/lib/firefox/firefox
 # makefile
 SHELL = /bin/sh
 # default
@@ -118,20 +137,28 @@ SHLVL = 1
 MAKELEVEL := 0
 # default
 MAKE = $(MAKE_COMMAND)
+ 
 # environment
+ 
 PATH = /usr/local/bin:/usr/bin:/var/lib/snapd/snap/bin:/usr/local/sbin:/var/lib/flatpak/exports/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
+ 
 # default
+ 
 MAKEFILES := 
 # environment
 MOTD_SHOWN = pam
 # automatic
 ^F = $(notdir $^)
 # environment
+MOZ_CRASHREPORTER_RESTART_ARG_1 = 
+# environment
 VSCODE_LOG_NATIVE = false
 # environment
 USERNAME = facupri
 # environment
 LINES = 24
+# environment
+XRE_BINARY_PATH = 
 # automatic
 ?F = $(notdir $?)
 # environment
@@ -147,7 +174,11 @@ GNUMAKEFLAGS :=
 # environment
 BROWSER = /usr/bin/firefox
 # environment
+XRE_PROFILE_PATH = 
+# environment
 LOGNAME = facupri
+# environment
+GIO_LAUNCHED_DESKTOP_FILE = /usr/share/applications/VSCodium.desktop
 # environment
 XDG_VTNR = 2
 # makefile
@@ -165,6 +196,8 @@ USER = facupri
 # default
 MAKE_VERSION := 4.3
 # environment
+GIO_LAUNCHED_DESKTOP_FILE_PID = 202660
+# environment
 VSCODE_NODE_CACHED_DATA_DIR = /home/facupri/.config/VSCodium/CachedData/507ce72a4466fbb27b715c3722558bb15afa9f48
 # environment
 _ = /usr/bin/make
@@ -172,6 +205,10 @@ _ = /usr/bin/make
 XDG_RUNTIME_DIR = /run/user/1000
 # makefile (from 'makefile', line 3)
 CFLAGS = -g -O0 -Wall -Werror -std=c99 -I cabeceras
+# environment
+PARENT_WINDOW_ID = x11:5e00007
+# environment
+MOZ_CRASHREPORTER_PING_DIRECTORY = /home/facupri/.mozilla/firefox/Pending Pings
 # environment
 XDG_SESSION_CLASS = user
 # environment
@@ -183,6 +220,8 @@ ELECTRON_RUN_AS_NODE = 1
 # environment
 VSCODE_IPC_HOOK = /run/user/1000/vscode-97a90b69-1.57.1-main.sock
 # environment
+XRE_PROFILE_LOCAL_PATH = 
+# environment
 XDG_SESSION_ID = 3
 # default
 .RECIPEPREFIX := 
@@ -192,6 +231,8 @@ XDG_SESSION_ID = 3
 COLUMNS = 80
 # default
 SUFFIXES := 
+# environment
+MOZ_CRASHREPORTER_EVENTS_DIRECTORY = /home/facupri/.mozilla/firefox/s1w1e3u2.default-release/crashes/events
 # environment
 VSCODE_CLI = 1
 # environment
@@ -203,7 +244,7 @@ CC = gcc
 # environment
 GDMSESSION = qtile
 # variable set hash-table stats:
-# Load=96/1024=9%, Rehash=0, Collisions=5/131=4%
+# Load=114/1024=11%, Rehash=0, Collisions=5/149=3%
 
 # Pattern-specific Variable Values
 
@@ -211,9 +252,9 @@ GDMSESSION = qtile
 
 # Directories
 
-# . (device 2053, inode 19142008): 12 files, no impossibilities.
+# . (device 2053, inode 19142008): 11 files, no impossibilities.
 
-# 12 files, no impossibilities in 1 directories.
+# 11 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -224,7 +265,7 @@ GDMSESSION = qtile
 # Not a target:
 hash_pruebas.c:
 #  Implicit rule search has been done.
-#  Last modified 2021-07-13 15:19:37.54716097
+#  Last modified 2021-07-13 19:55:44.646723585
 #  File has been updated.
 #  Successfully updated.
 
@@ -250,7 +291,7 @@ valgrind: pruebas
 # Not a target:
 hash.c:
 #  Implicit rule search has been done.
-#  Last modified 2021-07-13 17:29:56.942551689
+#  Last modified 2021-07-13 19:59:46.813368551
 #  File has been updated.
 #  Successfully updated.
 
@@ -285,8 +326,7 @@ makefile:
 pruebas: hash.c hash_pruebas.c
 #  Implicit rule search has not been done.
 #  Implicit/static pattern stem: ''
- 
-#  Last modified 2021-07-13 17:29:04.252467167
+#  File does not exist.
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # automatic
@@ -302,7 +342,7 @@ pruebas: hash.c hash_pruebas.c
 # automatic
 # ^ := hash.c hash_pruebas.c
 # automatic
-# ? := hash.c
+# ? := hash.c hash_pruebas.c
 # automatic
 # | := 
 # variable set hash-table stats:
@@ -336,12 +376,12 @@ minidemo: hash.c hash_minidemo.c
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 21 / storage = 191 B / avg = 9 B
-# current buf: size = 8162 B / used = 191 B / count = 21 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 21 / storage = 195 B / avg = 9 B
+# current buf: size = 8162 B / used = 195 B / count = 21 / avg = 9 B
 
-# strcache performance: lookups = 41 / hit rate = 48%
+# strcache performance: lookups = 40 / hit rate = 47%
 # hash-table stats:
-# Load=21/8192=0%, Rehash=0, Collisions=0/41=0%
-# Finished Make data base on Tue Jul 13 18:26:43 2021
+# Load=21/8192=0%, Rehash=0, Collisions=0/40=0%
+# Finished Make data base on Tue Jul 13 23:05:25 2021
 
  
