@@ -1,0 +1,374 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 4.3
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2020 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Tue Jul 13 22:53:22 2021
+
+# Variables
+
+# environment
+GDK_BACKEND = x11
+# environment
+MOZ_ASSUME_USER_NS = 1
+# environment
+LC_ALL = C
+# environment
+NO_AT_BRIDGE = 1
+# environment
+MOZ_CRASHREPORTER_DATA_DIRECTORY = /home/facupri/.mozilla/firefox/Crash Reports
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-11cc1a54-893b-4344-85eb-57a492ba40e8.sock
+# environment
+VSCODE_CWD = /home/facupri
+# environment
+WINDOWPATH = 2
+# environment
+XRE_RESTARTED_BY_PROFILE_MANAGER = 
+# environment
+MOZ_CRASHREPORTER_STRINGS_OVERRIDE = /usr/lib/firefox/browser/crashreporter-override.ini
+# environment
+GDM_LANG = es_AR.UTF-8
+# default
+MAKE_COMMAND := make
+# environment
+GTK3_MODULES = xapp-gtk3-module
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# default
+.VARIABLES := 
+# environment
+PWD = /home/facupri/Documentos/Facultad/algoritmos_programacion_II_mendez/tps/tp2_salon_de_la_fama_reloaded
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# environment
+force_s3tc_enable = true
+# environment
+MAIL = /var/spool/mail/facupri
+# environment
+XDG_DATA_DIRS = /home/facupri/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
+# environment
+MOZ_LAUNCHED_CHILD = 
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+VSCODE_LOG_STACK = false
+# automatic
+%F = $(notdir $%)
+# environment
+LANG = C
+# environment
+XAUTHORITY = /run/user/1000/gdm/Xauthority
+# default
+.LOADED := 
+# default
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+# makefile
+MAKEFLAGS = pqrR
+# makefile
+CURDIR := /home/facupri/Documentos/Facultad/algoritmos_programacion_II_mendez/tps/tp2_salon_de_la_fama_reloaded
+# environment
+VSCODE_PIPE_LOGGING = true
+# makefile (from 'makefile', line 3)
+VFLAGS = --leak-check=full --track-origins=yes --show-reachable=yes --error-exitcode=2
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+MFLAGS = -pqrR
+# default
+.SHELLFLAGS := -c
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# environment
+XDG_SESSION_DESKTOP = qtile
+# environment
+VSCODE_CRASH_REPORTER_START_OPTIONS = {"companyName":"Microsoft","productName":"VSCodium","submitURL":"","uploadToServer":false}
+# makefile (from 'makefile', line 1)
+MAKEFILE_LIST := makefile
+# automatic
+@F = $(notdir $@)
+# environment
+LC_COLLATE = es_AR.UTF-8
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+VSCODE_PID = 31019
+# environment
+XDG_SESSION_TYPE = x11
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# automatic
+*F = $(notdir $*)
+# environment
+XUL_APP_FILE = 
+# environment
+QT_QPA_PLATFORMTHEME = qt5ct
+# environment
+XRE_START_OFFLINE = 
+# environment
+CHROME_DESKTOP = codium-url-handler.desktop
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# environment
+VSCODE_NLS_CONFIG = {"locale":"es-419","availableLanguages":{},"_languagePackSupport":true}
+# environment
+BREAKPAD_DUMP_LOCATION = /home/facupri/.config/VSCodium/exthost Crash Reports
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# environment
+MOZ_CRASHREPORTER_RESTART_ARG_0 = /usr/lib/firefox/firefox
+# makefile
+SHELL = /bin/sh
+# default
+MAKECMDGOALS := all
+# environment
+SHLVL = 1
+# environment
+MAKELEVEL := 0
+# default
+MAKE = $(MAKE_COMMAND)
+# environment
+PATH = /usr/local/bin:/usr/bin:/var/lib/snapd/snap/bin:/usr/local/sbin:/var/lib/flatpak/exports/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
+# default
+MAKEFILES := 
+# environment
+MOTD_SHOWN = pam
+# automatic
+^F = $(notdir $^)
+# makefile (from 'makefile', line 6)
+PUERTO_SERVER = 8080
+# environment
+MOZ_CRASHREPORTER_RESTART_ARG_1 = 
+# environment
+VSCODE_LOG_NATIVE = false
+# environment
+USERNAME = facupri
+# environment
+LINES = 24
+# environment
+XRE_BINARY_PATH = 
+# automatic
+?F = $(notdir $?)
+# environment
+XDG_SEAT = seat0
+# automatic
++F = $(notdir $+)
+# environment
+DESKTOP_SESSION = qtile
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = undefined
+# 'override' directive
+GNUMAKEFLAGS := 
+# environment
+BROWSER = /usr/bin/firefox
+# environment
+XRE_PROFILE_PATH = 
+# environment
+LOGNAME = facupri
+# environment
+GIO_LAUNCHED_DESKTOP_FILE = /usr/share/applications/VSCodium.desktop
+# environment
+XDG_VTNR = 2
+# makefile
+.DEFAULT_GOAL := valgrind
+# environment
+SYSTEMD_EXEC_PID = 958
+# makefile (from 'makefile', line 5)
+ARCHIVO_SALON = salones/salon_estandar.txt
+# environment
+EDITOR = /usr/bin/nano
+# environment
+DISPLAY = :0
+# environment
+GTK_MODULES = canberra-gtk-module
+# environment
+USER = facupri
+# default
+MAKE_VERSION := 4.3
+# environment
+GIO_LAUNCHED_DESKTOP_FILE_PID = 202660
+# environment
+VSCODE_NODE_CACHED_DATA_DIR = /home/facupri/.config/VSCodium/CachedData/507ce72a4466fbb27b715c3722558bb15afa9f48
+# environment
+_ = /usr/bin/make
+# environment
+XDG_RUNTIME_DIR = /run/user/1000
+# makefile (from 'makefile', line 1)
+CFLAGS = -g -O2 -std=c99 -Wall -Wconversion -Wtype-limits -Werror -I src
+# environment
+PARENT_WINDOW_ID = x11:5e00007
+# environment
+MOZ_CRASHREPORTER_PING_DIRECTORY = /home/facupri/.mozilla/firefox/Pending Pings
+# environment
+XDG_SESSION_CLASS = user
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/services/extensions/node/extensionHostProcess
+# environment
+HOME = /home/facupri
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# environment
+VSCODE_IPC_HOOK = /run/user/1000/vscode-97a90b69-1.57.1-main.sock
+# environment
+XRE_PROFILE_LOCAL_PATH = 
+# environment
+XDG_SESSION_ID = 3
+# default
+.RECIPEPREFIX := 
+# automatic
+<F = $(notdir $<)
+# environment
+COLUMNS = 80
+# default
+SUFFIXES := 
+# environment
+MOZ_CRASHREPORTER_EVENTS_DIRECTORY = /home/facupri/.mozilla/firefox/s1w1e3u2.default-release/crashes/events
+# environment
+VSCODE_CLI = 1
+# environment
+ELECTRON_NO_ATTACH_CONSOLE = 1
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync check-symlink guile load
+# makefile (from 'makefile', line 2)
+CFLAGS_SERVER = -g -O2 -Wall -Wconversion -Wtype-limits -Werror -I src
+# environment
+GDMSESSION = qtile
+# variable set hash-table stats:
+# Load=116/1024=11%, Rehash=0, Collisions=5/146=3%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# src (device 2053, inode 21895125): 6 files, no impossibilities.
+# . (device 2053, inode 21105067): 10 files, no impossibilities.
+
+# 16 files, no impossibilities in 2 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+src/entrenador.h:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+valgrind-server: server
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'makefile', line 12):
+	valgrind $(VFLAGS) ./server  $(ARCHIVO_SALON) $(PUERTO_SERVER) 2>&1
+
+# Not a target:
+src/salon.h:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+clean:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'makefile', line 21):
+	rm pruebas server 2>&1
+
+valgrind: pruebas
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'makefile', line 9):
+	valgrind $(VFLAGS) ./pruebas 2>&1
+
+# Not a target:
+pruebas.c:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+server.c:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+server: server.c src/entrenador.h src/lista.h src/salon.c src/salon.h
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'makefile', line 18):
+	gcc $(CFLAGS_SERVER) -o server server.c src/*.c 2>&1
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+all:
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+src/lista.h:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-07-10 18:03:21
+#  File has been updated.
+#  Successfully updated.
+
+pruebas: pruebas.c src/entrenador.h src/lista.h src/salon.c src/salon.h
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'makefile', line 15):
+	gcc $(CFLAGS) -o pruebas pruebas.c src/*.c 2>&1
+
+# Not a target:
+src/salon.c:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# files hash-table stats:
+# Load=15/1024=1%, Rehash=0, Collisions=0/39=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 28 / storage = 279 B / avg = 9 B
+# current buf: size = 8162 B / used = 279 B / count = 28 / avg = 9 B
+
+# strcache performance: lookups = 48 / hit rate = 41%
+# hash-table stats:
+# Load=28/8192=0%, Rehash=0, Collisions=0/48=0%
+# Finished Make data base on Tue Jul 13 22:53:22 2021
+
+ 
+make: *** No rule to make target 'all'.  Stop.
+ 
