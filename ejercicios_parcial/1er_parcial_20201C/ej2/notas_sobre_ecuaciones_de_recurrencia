@@ -1,0 +1,22 @@
+## Ecuaciones de Recurrencia
+- Son del tipo de ecuaciones que expresan el tiempo de ejecucion de un algoritmo de forma recursiva.
+- Generalmente la recursividad es en terminos de un input mas pequeño
+- Existen muchas formas de solucionar recurrentes, algunos ejemplos son:
+T(n) = O(n) + 2T(n/2) -> Quick sort tiempo promedio
+H(n) = H(n-1) + O(1) + H(n-1) = 2H(n-1)+O(1)
+
+## Teorema del maestro
+El teorema del maestro permite hacer un analisis de complejidad en problemas que se aplica el metodo de Divicion y Conquista
+
+  T(n) = aT(n/b) + f(n)
+  f(n) -> funcion polinomica
+
+  A*T(n/b) => Parte recursiva
+  f(n) costo de juntado/union de cada llamada recusiva
+
+
+  A*T(n/b) < f(n) menor en tiempo (domina fn)
+
+  A*T(n/b) = f(n) igual en tiempo (no domina nadie)
+
+  A*T(n/b) > f(n) mayor en tiempo (domina la parte recursiva)
