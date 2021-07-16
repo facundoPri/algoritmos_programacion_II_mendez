@@ -25,7 +25,7 @@ salon_t *salon_leer_archivo(const char *nombre_archivo) {
       pokemon_t **equipo = NULL;
       entrenador->equipo = equipo;
     } else if (len == 6) {
-      pokemon_t *pokemon = malloc(1*sizeof(pokemon_t));
+      pokemon_t *pokemon = malloc(1 * sizeof(pokemon_t));
       strcpy(pokemon->nombre, elementos_linea[0]);
       pokemon->nivel = atoi(elementos_linea[1]);
       pokemon->defensa = atoi(elementos_linea[2]);
@@ -42,17 +42,24 @@ salon_t *salon_leer_archivo(const char *nombre_archivo) {
 
 int salon_guardar_archivo(salon_t *salon, const char *nombre_archivo) {
 
-  FILE* archivo = fopen(nombre_archivo,"w");
+  FILE *archivo = fopen(nombre_archivo, "w");
 
-  if(!archivo){
-   fclosen(archivo); 
+  if (!archivo) {
+    fclosen(archivo);
     return -1;
   }
   int i;
   for (i = 0; i < vtrlen(salon->entrenadores); i++) {
-    fprintf(archivo,"%s;%i\n", salon->entrenadores[i]->nombre, salon->entrenadores[i]->victorias);
-    for(int n =0; n< vtrlen(salon->entrenadores[i]->equipo); n++){
-      fprintf(archivo,"%s;%i;%i;%i;%i;%i\n", salon->entrenadores[i]->equipo[n]->nombre,salon->entrenadores[i]->equipo[n]->nivel,salon->entrenadores[i]->equipo[n]->defensa,salon->entrenadores[i]->equipo[n]->fuerza,salon->entrenadores[i]->equipo[n]->inteligencia,salon->entrenadores[i]->equipo[n]->velocidad);
+    fprintf(archivo, "%s;%i\n", salon->entrenadores[i]->nombre,
+            salon->entrenadores[i]->victorias);
+    for (int n = 0; n < vtrlen(salon->entrenadores[i]->equipo); n++) {
+      fprintf(archivo, "%s;%i;%i;%i;%i;%i\n",
+              salon->entrenadores[i]->equipo[n]->nombre,
+              salon->entrenadores[i]->equipo[n]->nivel,
+              salon->entrenadores[i]->equipo[n]->defensa,
+              salon->entrenadores[i]->equipo[n]->fuerza,
+              salon->entrenadores[i]->equipo[n]->inteligencia,
+              salon->entrenadores[i]->equipo[n]->velocidad);
     }
   }
 
@@ -66,7 +73,8 @@ salon_t *salon_agregar_entrenador(salon_t *salon, entrenador_t *entrenador) {
     return NULL;
   }
   entrenador_t **entrenadores_ordenados = NULL;
-  //TODO: Chequer por que no entra el ultimo y lo tengo que poner aparte en un if
+  // TODO: Chequer por que no entra el ultimo y lo tengo que poner aparte en un
+  // if
   for (int i = 0; i < vtrlen(salon->entrenadores); i++) {
     if (entrenador->victorias < salon->entrenadores[i]->victorias &&
         vtrlen(entrenadores_ordenados) == i) {
@@ -84,11 +92,13 @@ salon_t *salon_agregar_entrenador(salon_t *salon, entrenador_t *entrenador) {
   return salon;
 }
 
-entrenador_t **salon_obtener_entrenadores_mas_ganadores(salon_t *salon, int cantidad_minima_victorias) {
-  entrenador_t ** encontrados = NULL;
+entrenador_t **
+salon_obtener_entrenadores_mas_ganadores(salon_t *salon,
+                                         int cantidad_minima_victorias) {
+  entrenador_t **encontrados = NULL;
   for (int i = 0; i < vtrlen(salon->entrenadores); i++) {
-    if(salon->entrenadores[i]->victorias>=cantidad_minima_victorias){
-      encontrados= vtradd(encontrados,salon->entrenadores[i]);
+    if (salon->entrenadores[i]->victorias >= cantidad_minima_victorias) {
+      encontrados = vtradd(encontrados, salon->entrenadores[i]);
     }
   }
 
@@ -96,13 +106,10 @@ entrenador_t **salon_obtener_entrenadores_mas_ganadores(salon_t *salon, int cant
 }
 
 void salon_mostrar_entrenador(entrenador_t *entrenador) {
-  printf("Entrenador: %s\nVictorias: %i\n\n", entrenador->nombre, entrenador->victorias);
-
+  printf("Entrenador: %s\nVictorias: %i\n\n", entrenador->nombre,
+         entrenador->victorias);
 }
 
-void salon_destruir(salon_t *salon) {
-  
-}
+void salon_destruir(salon_t *salon) {}
 
-
-//TODO: Caso de error devolver NULL, chequear en todas las funciones
+// TODO: Caso de error devolver NULL, chequear en todas las funciones
