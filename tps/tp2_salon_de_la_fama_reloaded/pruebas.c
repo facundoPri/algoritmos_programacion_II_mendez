@@ -14,20 +14,28 @@ void DadoArchivoInexistenteONULL_CuandoIntentoLeerArchivo_EntoncesObtengoNULL() 
                "Si paso una direccion inexistente obtengo null");
 }
 
-void DadoUnArchivoExistente_CuandoIntentoLeerArchivo_EntoncesNoObtengoNULL() {
+void DadoUnArchivoConSalonInvalido_CuandoIntentoLeerArchivo_EntoncesObtengoNULL() {
   salon_t *salon1 = salon_leer_archivo("archivos_pruebas/salon_vacio.csv");
-  pa2m_afirmar(
-      salon1 != NO_EXISTE,
-      "Si paso un salon existente pero vacio igual se carga un salon vacio");
-  salon_t *salon2 = salon_leer_archivo("archivos_prubas/salon_prueba1.csv");
-  pa2m_afirmar(salon2 == NO_EXISTE,
+  salon_t *salon2 =
+      salon_leer_archivo("archivos_pruebas/salon_entrenador_sin_pokemones.csv");
+  salon_t *salon3 = salon_leer_archivo("archivos_pruebas/salon_invalido1.csv");
+  salon_t *salon4 = salon_leer_archivo("archivos_pruebas/salon_invalido2.csv");
+
+  pa2m_afirmar(salon1 == NO_EXISTE,
+               "Si paso un salon existente pero vacio obtengo error");
+  pa2m_afirmar(salon2 == NO_EXISTE, "Si paso un salon existente pero hay "
+                                    "entrenadores sin pokemones obtengo error");
+  pa2m_afirmar(salon3 == NO_EXISTE, "Si paso un salon con formato invalido[1]");
+  pa2m_afirmar(salon4 == NO_EXISTE, "Si paso un salon con formato invalido[2]");
+}
+
+void DadoUnArchivoExistente_CuandoIntentoLeerArchivo_EntoncesNoObtengoNULL() {
+  salon_t *salon1 = salon_leer_archivo("archivos_prubas/salon_prueba1.csv");
+  pa2m_afirmar(salon1 != NO_EXISTE,
                "Si paso un salon, el salon se carga en memoria");
 
   salon_destruir(salon1);
-  salon_destruir(salon2);
 }
-
-// TODO: Solo se puede cargar entrenador con minimo 1 pokemon
 
 // Salon guardar
 void DadoUnSalonNULL_CuandoIntentoGuardarSalon_EntoncesObtengo0() {}
@@ -69,6 +77,7 @@ int main() {
 
   pa2m_nuevo_grupo("Salon leer archivo");
   DadoArchivoInexistenteONULL_CuandoIntentoLeerArchivo_EntoncesObtengoNULL();
+  DadoUnArchivoConSalonInvalido_CuandoIntentoLeerArchivo_EntoncesObtengoNULL();
   DadoUnArchivoExistente_CuandoIntentoLeerArchivo_EntoncesNoObtengoNULL();
 
   pa2m_nuevo_grupo("Salon guardar archivo");
