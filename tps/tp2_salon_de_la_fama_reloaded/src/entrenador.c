@@ -88,8 +88,7 @@ int entrenador_comparador(entrenador_t *entrenador1,
   if (!entrenador1 || !entrenador2) {
     return ERROR;
   }
-  // TODO: chequear porque esta al revez;
-  return strcmp(entrenador2->nombre, entrenador1->nombre);
+  return strcmp(entrenador1->nombre, entrenador2->nombre);
 };
 
 size_t entrenador_cantidad_pokemones(entrenador_t *entrenador) {

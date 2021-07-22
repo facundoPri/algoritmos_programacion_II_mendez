@@ -148,11 +148,11 @@ void DadoEntrenadores_CuandoComparoEntrenadores_EntoncesObtengoElResultadoDesead
   entrenador_t *entrenador2 = entrenador_crear("b", 1);
   entrenador_t *entrenador3 = entrenador_crear("ba", 1);
 
-  pa2m_afirmar(entrenador_comparador(entrenador1, entrenador2) > 0,
+  pa2m_afirmar(entrenador_comparador(entrenador1, entrenador2) < 0,
                "entrenador1 es menor a entrenador2");
   pa2m_afirmar(entrenador_comparador(entrenador1, entrenador1) == 0,
                "entrenador1 es igual a entrenador1");
-  pa2m_afirmar(entrenador_comparador(entrenador3, entrenador2) < 0,
+  pa2m_afirmar(entrenador_comparador(entrenador3, entrenador2) > 0,
                "entrenador3 es mayor a entrenador2");
 
   entrenador_destruir(entrenador1);
