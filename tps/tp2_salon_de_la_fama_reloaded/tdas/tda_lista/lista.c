@@ -236,16 +236,15 @@ void lista_iterador_destruir(lista_iterador_t *iterador) { free(iterador); }
 
 size_t lista_con_cada_elemento(lista_t *lista, bool (*funcion)(void *, void *),
                                void *contexto) {
-  if (!lista || !funcion)
+  if (!lista || lista->cantidad == 0)
     return 0;
   size_t i = 0;
   nodo_t *nodo_actual = lista->nodo_inicio;
-  while (nodo_actual) {
+  bool detener = true;
+  while (nodo_actual && detener) {
     i++;
-    bool resultado = funcion(nodo_actual->elemento, contexto);
-    if (!resultado) {
-      break;
-    }
+    if (funcion)
+      detener = funcion(nodo_actual->elemento, contexto);
     nodo_actual = nodo_actual->siguiente;
   }
   return i;
