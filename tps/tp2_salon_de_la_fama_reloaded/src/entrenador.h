@@ -4,6 +4,7 @@
 #include "abb.h"
 #include "hash.h"
 #include "lista.h"
+#include "util.h"
 #include <stddef.h>
 #include <stdlib.h>
 
@@ -47,6 +48,12 @@ int entrenador_quitar_pokemon(entrenador_t *entrenador, const char *nombre);
 int entrenador_comparador(entrenador_t *entrenador1, entrenador_t *entrenador2);
 
 /**
+ * Funcion recibe un entrenador y un archivo, y lo anota. Si hubo un error
+ * devuelve true, si no devuelve false.
+ */
+bool guardar_entrenador_archivo(void *entrenador, void *archivo);
+
+/**
  * Recibe entrenador y devuelve la cantidad de pokemones que contiene.
  * Devuelve 0 encaso de error.
  */
@@ -60,18 +67,26 @@ pokemon_t *entrenador_buscar_pokemon(entrenador_t *entrenador,
                                      const char *nombre_pokemon);
 
 /**
- * Recibe un entrenador, el metodo de ordenado, que puede ser 1 si clasico o 2
- * si moderno y la cantidad de pokemones deseados. Devuelve una lista ordenada
- * de peor a mejor segun el metodo pasado con la cantidad de pokemones deseados.
- * Si no se pasa la cantidad o es 0 se almacenan todos los pokemones.
+ * Recibe un entrenador y la cantidad de pokemones deseados. Devuelve una lista
+ * ordenada con la cantidad de pokemones deseados. Si no se pasa la cantidad o
+ * es 0 se almacenan todos los pokemones.
  */
 lista_t *entrenador_lista_ordenada_pokemones(entrenador_t *entrenador,
-                                             int metodo_ordenamiento,
                                              size_t cantidad);
 
 /**
  * Recibe un entrenador y libera la memoria utilizada.
  */
 void entrenador_destruir(entrenador_t *entrenador);
+
+/**
+ * Recibe un entrenador y devuelve la cantidad de victorias
+ */
+int entrenador_victorias(entrenador_t *entrenador);
+
+/**
+ * Recibe un entrenador y devuelve su nombre
+ */
+const char *entrenador_nombre(entrenador_t *entrenador);
 
 #endif // ENTRENADOR_H_
