@@ -1,3 +1,4 @@
 .ccls-cache/*
 *.log
 .vscode
+vgcore.*
