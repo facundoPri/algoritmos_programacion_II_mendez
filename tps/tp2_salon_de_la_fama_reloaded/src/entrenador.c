@@ -43,6 +43,10 @@ bool guardar_pokemon_archivo(void *pokemon, void *archivo) {
   return true;
 }
 
+/**
+ * Recibe dos pokemones y hace un strcmp entre sus dos nombre para ordenarlos en
+ * el abb
+ */
 int pokemon_comparador(void *pokemon1, void *pokemon2) {
   if (!pokemon1 || !pokemon2) {
     return ERROR;
@@ -66,7 +70,6 @@ entrenador_t *entrenador_crear(const char *nombre, int victorias) {
     free(entrenador);
     return NO_EXISTE;
   }
-
   return entrenador;
 };
 
@@ -88,12 +91,12 @@ int entrenador_insertar_pokemon(entrenador_t *entrenador, const char *nombre,
   nuevo_pokemon->inteligencia = inteligencia;
   nuevo_pokemon->velocidad = velocidad;
   entrenador->ultimoId++;
+
   int resultado = arbol_insertar(entrenador->pokemones, nuevo_pokemon);
   if (resultado == ERROR) {
     free(nuevo_pokemon);
     return ERROR;
   }
-
   return EXITO;
 };
 
@@ -104,9 +107,11 @@ int entrenador_quitar_pokemon(entrenador_t *entrenador, const char *nombre) {
   if (!pokemon_aux)
     return ERROR;
   pokemon_aux->nombre = duplicar_str(nombre);
+
   int resultado = -1;
   if (arbol_buscar(entrenador->pokemones, pokemon_aux))
     resultado = arbol_borrar(entrenador->pokemones, pokemon_aux);
+
   destruir_pokemon(pokemon_aux);
   return resultado;
 };
@@ -154,23 +159,33 @@ pokemon_t *entrenador_buscar_pokemon(entrenador_t *entrenador,
   return pokemon_obtenido;
 };
 
-/*
-** Recibe dos pokemones, devuelve >0 si el primer pokemon es mayor, devuelve <0
-*si es menor
-*/
+/**
+ * Recibe dos pokemones, devuelve >0 si el primer pokemon es mayor, devuelve <0
+ * si es menor
+ */
 int comparador_por_orden(void *pokemon1, void *pokemon2) {
   pokemon_t *p1 = pokemon1;
   pokemon_t *p2 = pokemon2;
   return (int)p1->orden - (int)p2->orden;
 }
 
-bool insertar_abb_desde_hash(void *pokemon, void *abb) {
+/**
+ * Funcion auxiliar para ingresar elementos de abb en nuevo abb, recibe el
+ * elemento y la lista final y devuelve true en caso de error, y false si puede
+ * seguir insertando
+ */
+bool insertar_abb_desde_abb(void *pokemon, void *abb) {
   int resultado = arbol_insertar((abb_t *)abb, pokemon);
   if (resultado == ERROR)
     return true;
   return false;
 }
 
+/**
+ * Funcion auxiliar para ingresar elementos de abb en lista, recibe el elemento
+ * y la lista final y devuelve true en caso de error, y false si puede seguir
+ * insertando
+ */
 bool insertar_lista_desde_abb(void *pokemon, void *lista) {
   if (!pokemon || !lista) {
     return true;
@@ -194,13 +209,12 @@ lista_t *entrenador_lista_ordenada_pokemones(entrenador_t *entrenador,
 
   size_t cantidad_insertada =
       abb_con_cada_elemento(entrenador->pokemones, ABB_RECORRER_INORDEN,
-                            insertar_abb_desde_hash, arbol_pokemones);
+                            insertar_abb_desde_abb, arbol_pokemones);
 
   if (cantidad_insertada != entrenador_cantidad_pokemones(entrenador)) {
     arbol_destruir(arbol_pokemones);
     return NO_EXISTE;
   }
-
 
   pokemon_t **array_pokemones[cantidad];
   size_t cantidad_recorrida = arbol_recorrido_inorden(
