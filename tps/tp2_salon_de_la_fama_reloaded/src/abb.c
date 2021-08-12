@@ -1,7 +1,4 @@
 #include "abb.h"
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdio.h>
 
 abb_t *arbol_crear(abb_comparador comparador, abb_liberar_elemento destructor) {
   if (!comparador)

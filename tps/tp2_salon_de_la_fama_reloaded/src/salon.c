@@ -1,8 +1,6 @@
 #include "salon.h"
 #include "abb.h"
-#include "entrenador.h"
 #include "hash.h"
-#include "lista.h"
 #include "util.h"
 #include <ctype.h>
 #include <stddef.h>
@@ -835,7 +833,6 @@ lista_t *salon_filtrar_entrenadores(salon_t *salon,
 }
 
 // TODO implementar join
-// TODO Implementar reglas
 char *salon_ejecutar_comando(salon_t *salon, const char *comando) {
   if (!salon || !comando || !*comando)
     return NULL;

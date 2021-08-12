@@ -4,6 +4,7 @@
 #include "lista.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define ERROR -1
 #define EXITO 0

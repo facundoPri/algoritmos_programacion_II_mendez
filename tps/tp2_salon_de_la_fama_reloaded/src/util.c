@@ -1,8 +1,4 @@
 #include "util.h"
-#include "lista.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /*
  * Recibe una string y devuelve una copia de ese string.

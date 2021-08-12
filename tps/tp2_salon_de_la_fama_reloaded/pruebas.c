@@ -452,8 +452,6 @@ bool siempre_false(entrenador_t *entrenador, void *extra) {
   entrenador = entrenador;
   return false;
 }
-// TODO: verificar que en la documentacion se diga que con true el entrenador
-// pasa y con false no
 // Filtrar salon
 void DadoUnSalonNULL_CuandoIntentoFiltrarSalon_EntoncesObtengoNULL() {
   pa2m_afirmar(salon_filtrar_entrenadores(NULL, mas_de_35_victorias, NULL) ==

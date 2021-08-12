@@ -7,6 +7,8 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stddef.h>
+#include <stdio.h>
 
 /*
  * Comparador de elementos. Recibe dos elementos del arbol y devuelve

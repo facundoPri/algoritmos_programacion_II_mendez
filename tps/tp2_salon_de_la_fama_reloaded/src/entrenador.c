@@ -1,12 +1,6 @@
 #include "entrenador.h"
 #include "abb.h"
-#include "hash.h"
 #include "lista.h"
-#include "util.h"
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 struct _pokemon_t {
   const char *nombre;
@@ -112,7 +106,7 @@ int entrenador_quitar_pokemon(entrenador_t *entrenador, const char *nombre) {
   pokemon_aux->nombre = duplicar_str(nombre);
   int resultado = -1;
   if (arbol_buscar(entrenador->pokemones, pokemon_aux))
-   resultado = arbol_borrar(entrenador->pokemones, pokemon_aux);
+    resultado = arbol_borrar(entrenador->pokemones, pokemon_aux);
   destruir_pokemon(pokemon_aux);
   return resultado;
 };
@@ -177,37 +171,46 @@ bool insertar_abb_desde_hash(void *pokemon, void *abb) {
   return false;
 }
 
+bool insertar_lista_desde_abb(void *pokemon, void *lista) {
+  if (!pokemon || !lista) {
+    return true;
+  }
+  int resultado = lista_encolar((lista_t *)lista, pokemon);
+  if (resultado == ERROR)
+    return true;
+
+  return false;
+}
+
 lista_t *entrenador_lista_ordenada_pokemones(entrenador_t *entrenador,
                                              size_t cantidad) {
   if (!entrenador)
     return NO_EXISTE;
-  if (cantidad == 0) {
+  if (cantidad == 0)
     cantidad = entrenador_cantidad_pokemones(entrenador);
-  }
 
   abb_t *arbol_pokemones;
   arbol_pokemones = arbol_crear(comparador_por_orden, NULL);
 
-  size_t cantidad_arbol =
+  size_t cantidad_insertada =
       abb_con_cada_elemento(entrenador->pokemones, ABB_RECORRER_INORDEN,
                             insertar_abb_desde_hash, arbol_pokemones);
 
-  if (cantidad_arbol != entrenador_cantidad_pokemones(entrenador)) {
+  if (cantidad_insertada != entrenador_cantidad_pokemones(entrenador)) {
     arbol_destruir(arbol_pokemones);
     return NO_EXISTE;
   }
+
 
   pokemon_t **array_pokemones[cantidad];
   size_t cantidad_recorrida = arbol_recorrido_inorden(
       arbol_pokemones, (void **)array_pokemones, cantidad);
 
-  if (cantidad_recorrida != cantidad &&
-      cantidad_recorrida != entrenador_cantidad_pokemones(entrenador)) {
-    arbol_destruir(arbol_pokemones);
+  arbol_destruir(arbol_pokemones);
+  if (cantidad_recorrida != cantidad) {
     return NO_EXISTE;
   }
 
-  arbol_destruir(arbol_pokemones);
   lista_t *lista_pokemones = lista_crear();
   if (!lista_pokemones)
     return NO_EXISTE;
@@ -239,7 +242,7 @@ int entrenador_victorias(entrenador_t *entrenador) {
 
 const char *entrenador_nombre(entrenador_t *entrenador) {
   if (!entrenador)
-    return NULL;
+    return NO_EXISTE;
   return entrenador->nombre;
 }
 

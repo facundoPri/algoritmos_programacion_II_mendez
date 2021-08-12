@@ -6,7 +6,9 @@
 #include "lista.h"
 #include "util.h"
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define METODO_CLASICO 1
 #define METODO_MODERNO 2
