@@ -30,6 +30,7 @@ typedef struct nodo_abb {
 
 typedef struct abb {
   nodo_abb_t *nodo_raiz;
+  size_t cantidad;
   abb_comparador comparador;
   abb_liberar_elemento destructor;
 } abb_t;
@@ -134,5 +135,9 @@ void arbol_destruir(abb_t *arbol);
  */
 size_t abb_con_cada_elemento(abb_t *arbol, int recorrido,
                              bool (*funcion)(void *, void *), void *extra);
+/*
+** Recibe un arbol y devuelve la cantidad de elemento que tiene almacenado
+ */
+size_t abb_cantidad(abb_t *arbol);
 
 #endif /* __ARBOL_BINARIO_DE_BUSQUEDA_H__ */

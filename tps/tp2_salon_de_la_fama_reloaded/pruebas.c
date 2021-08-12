@@ -41,13 +41,13 @@ void DadoEntrenadorYAtributosDePokemonsValidos_CuandoAgregoPokemonAEntrenador_En
                "Se incremento la cantidad de pokemones");
   pa2m_afirmar(entrenador_insertar_pokemon(entrenador, "Pokemon", 2, 2, 2, 2,
                                            2) == EXITO,
-               "Si se inserta pokemon con mismo nombre se reescribe");
-  pa2m_afirmar(entrenador_cantidad_pokemones(entrenador) == 1,
+               "Si se inserta pokemon con mismo nombre se inserta");
+  pa2m_afirmar(entrenador_cantidad_pokemones(entrenador) == 2,
                "No se incremento la cantidad de pokemones");
   pa2m_afirmar(entrenador_insertar_pokemon(entrenador, "OtroPokemon", 1, 1, 1,
                                            1, 1) == EXITO,
                "Se pudo insertar pokemon");
-  pa2m_afirmar(entrenador_cantidad_pokemones(entrenador) == 2,
+  pa2m_afirmar(entrenador_cantidad_pokemones(entrenador) == 3,
                "Se incremento la cantidad de pokemones");
   entrenador_destruir(entrenador);
 }
@@ -252,17 +252,10 @@ void DadoUnStringInvalido_CuandoIntentoSepararEnLista_EntoncesObtengoNULL() {
                "Si se pasa un string null no se puede separar");
 }
 
-bool print_lista(void *elemento, void *contexto) {
-  contexto = contexto;
-  printf("%s\n", (char *)elemento);
-
-  return true;
-}
 
 void DadoUnStringVacio_CuandoIntentoSepararEnLista_EntoncesObtengoListaConUnElemento() {
   lista_t *lista = split("", ',');
   pa2m_afirmar(lista_elementos(lista) == 1, "Lista vacia contiene un elemento");
-  /* lista_con_cada_elemento(lista, print_lista, NULL); */
   destruir_lista_split(lista);
 }
 
@@ -280,19 +273,14 @@ void DadoUnStringYSeparadorValidos_CuandoIntentoSepararEnLista_EntoncesObtengoLi
 
   pa2m_afirmar(lista_elementos(lista1) == 2,
                "Lista tiene cantidad de elementos deseada[1]");
-  /* lista_con_cada_elemento(lista1, print_lista, NULL); */
   pa2m_afirmar(lista_elementos(lista2) == 2,
                "Lista tiene cantidad de elementos deseada[2]");
-  /* lista_con_cada_elemento(lista2, print_lista, NULL); */
   pa2m_afirmar(lista_elementos(lista3) == 2,
                "Lista tiene cantidad de elementos deseada[3]");
-  /* lista_con_cada_elemento(lista3, print_lista, NULL); */
   pa2m_afirmar(lista_elementos(lista4) == 1,
                "Lista tiene cantidad de elementos deseada[4]");
-  /* lista_con_cada_elemento(lista4, print_lista, NULL); */
   pa2m_afirmar(lista_elementos(lista5) == 3,
                "Lista tiene cantidad de elementos deseada[5]");
-  /* lista_con_cada_elemento(lista5, print_lista, NULL); */
 
   destruir_lista_split(lista1);
   destruir_lista_split(lista2);
@@ -520,16 +508,6 @@ void DadoUnSalonYComandoNoExistente_CuandoIntentoEjecutarComando_EntoncesObtengo
   salon_destruir(salon);
 }
 
-struct _salon_t {
-  abb_t *entrenadores;
-};
-
-typedef struct _entrenador_t {
-  const char *nombre;
-  int victorias;
-  hash_t *pokemones;
-} entrenador_t;
-
 /* "ENTRENADORES" */
 /* Respuesta :entrenador,victorias */
 /* "ENTRENADORES:victorias,n" */
@@ -610,7 +588,6 @@ void testear_commando_equipo(salon_t *salon) {
       resultado1 &&
           strcmp(resultado1, "pokemon1,1,2,3,4,5\npokemon2,5,4,3,2,1\n") == 0,
       "El resultado coincide");
-  printf("%s",resultado1);
   free(resultado1);
   // Que pasa si no encuentra entrenado con ese nombre
   char *resultado2 = salon_ejecutar_comando(salon, "EQUIPO:entrenador1000");
@@ -659,12 +636,10 @@ void testear_commando_comparar(salon_t *salon) {
   // Que pasa si paso entrenadores validos y regla valida
   char *resultado3 =
       salon_ejecutar_comando(salon, "COMPARAR:entrenador1,entrenador2,CLASICO");
-  printf("Comparar Clasico: %s",resultado3);
   pa2m_afirmar(resultado3, "Resultado existe");
   free(resultado3);
   char *resultado4 =
       salon_ejecutar_comando(salon, "COMPARAR:entrenador1,entrenador2,MODERNO");
-  printf("Comparar Moderno: %s",resultado4);
   pa2m_afirmar(resultado4, "Resultado existe");
   free(resultado4);
   char *resultado5 = salon_ejecutar_comando(
@@ -700,7 +675,7 @@ void testear_commando_agregar_pokemon(salon_t *salon) {
   // Que pasa si poso entrenador y pokemon validos
   char *resultado3 = salon_ejecutar_comando(
       salon, "AGREGAR_POKEMON:entrenador1,pokemon3,1,2,3,4,5");
-  pa2m_afirmar(resultado3 && strcmp(resultado3, "OK\n") == 0,
+  pa2m_afirmar(resultado3 && strcmp(resultado3, "OK") == 0,
                "La respuesta corresponde");
   free(resultado3);
 }
@@ -722,7 +697,7 @@ void testear_commando_quitar_pokemon(salon_t *salon) {
   // Que pasa si paso entrenador y pokemon validos
   char *resultado3 =
       salon_ejecutar_comando(salon, "QUITAR_POKEMON:entrenador1,pokemon3");
-  pa2m_afirmar(resultado3 && strcmp(resultado3, "OK\n") == 0,
+  pa2m_afirmar(resultado3 && strcmp(resultado3, "OK") == 0,
                "La respuesta corresponde");
   free(resultado3);
 }
@@ -735,10 +710,9 @@ void testear_commando_guardar(salon_t *salon) {
   pa2m_afirmar(resultado1 == NO_EXISTE,
                "Si no se pasa archivo no se puede guardar");
   // Que pasa llamo comando
-  printf("puebas 2\n");
   char *resultado2 = salon_ejecutar_comando(
       salon, "GUARDAR:archivos_pruebas/guardado_con_comando.csv");
-  pa2m_afirmar(resultado2 && strcmp(resultado2, "OK\n") == 0,
+  pa2m_afirmar(resultado2 && strcmp(resultado2, "OK") == 0,
                "La respuesta corresponde");
   free(resultado2);
 }
