@@ -115,6 +115,7 @@ lista_t *csv_reader(FILE *archivo, char separador) {
   if (!lista_archivo)
     return NULL;
   char *linea = NULL;
+
   while ((linea = fgets_alloc(archivo))) {
     lista_t *lista_linea = split(linea, separador);
     free(linea);
