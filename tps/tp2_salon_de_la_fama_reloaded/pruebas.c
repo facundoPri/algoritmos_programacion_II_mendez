@@ -520,16 +520,6 @@ void DadoUnSalonYComandoNoExistente_CuandoIntentoEjecutarComando_EntoncesObtengo
   salon_destruir(salon);
 }
 
-struct _salon_t {
-  abb_t *entrenadores;
-};
-
-typedef struct _entrenador_t {
-  const char *nombre;
-  int victorias;
-  hash_t *pokemones;
-} entrenador_t;
-
 /* "ENTRENADORES" */
 /* Respuesta :entrenador,victorias */
 /* "ENTRENADORES:victorias,n" */
@@ -700,7 +690,7 @@ void testear_commando_agregar_pokemon(salon_t *salon) {
   // Que pasa si poso entrenador y pokemon validos
   char *resultado3 = salon_ejecutar_comando(
       salon, "AGREGAR_POKEMON:entrenador1,pokemon3,1,2,3,4,5");
-  pa2m_afirmar(resultado3 && strcmp(resultado3, "OK\n") == 0,
+  pa2m_afirmar(resultado3 && strcmp(resultado3, "OK") == 0,
                "La respuesta corresponde");
   free(resultado3);
 }
@@ -722,7 +712,7 @@ void testear_commando_quitar_pokemon(salon_t *salon) {
   // Que pasa si paso entrenador y pokemon validos
   char *resultado3 =
       salon_ejecutar_comando(salon, "QUITAR_POKEMON:entrenador1,pokemon3");
-  pa2m_afirmar(resultado3 && strcmp(resultado3, "OK\n") == 0,
+  pa2m_afirmar(resultado3 && strcmp(resultado3, "OK") == 0,
                "La respuesta corresponde");
   free(resultado3);
 }
@@ -738,7 +728,7 @@ void testear_commando_guardar(salon_t *salon) {
   printf("puebas 2\n");
   char *resultado2 = salon_ejecutar_comando(
       salon, "GUARDAR:archivos_pruebas/guardado_con_comando.csv");
-  pa2m_afirmar(resultado2 && strcmp(resultado2, "OK\n") == 0,
+  pa2m_afirmar(resultado2 && strcmp(resultado2, "OK") == 0,
                "La respuesta corresponde");
   free(resultado2);
 }
