@@ -22,7 +22,7 @@ struct _entrenador_t {
   const char *nombre;
   int victorias;
   size_t ultimoId;
-  hash_t *pokemones;
+  abb_t *pokemones;
 };
 
 /**
@@ -44,11 +44,18 @@ bool guardar_pokemon_archivo(void *pokemon, void *archivo) {
   if (!pokemon || !archivo)
     return false;
   pokemon_t *p = pokemon;
-  fprintf(archivo, "%s;%i;%i;%i;%i;%i\n", p->nombre, p->nivel, p->defensa, p->fuerza,
-          p->inteligencia, p->velocidad);
+  fprintf(archivo, "%s;%i;%i;%i;%i;%i\n", p->nombre, p->nivel, p->defensa,
+          p->fuerza, p->inteligencia, p->velocidad);
   return true;
 }
 
+int pokemon_comparador(void *pokemon1, void *pokemon2) {
+  if (!pokemon1 || !pokemon2) {
+    return ERROR;
+  }
+  return strcmp(((pokemon_t *)pokemon1)->nombre,
+                ((pokemon_t *)pokemon2)->nombre);
+};
 
 entrenador_t *entrenador_crear(const char *nombre, int victorias) {
   if (!nombre)
@@ -60,7 +67,7 @@ entrenador_t *entrenador_crear(const char *nombre, int victorias) {
   entrenador->nombre = duplicar_str(nombre);
   entrenador->victorias = victorias;
   entrenador->ultimoId = 0;
-  entrenador->pokemones = hash_crear(destruir_pokemon, 10);
+  entrenador->pokemones = arbol_crear(pokemon_comparador, destruir_pokemon);
   if (!entrenador->pokemones) {
     free(entrenador);
     return NO_EXISTE;
@@ -70,15 +77,14 @@ entrenador_t *entrenador_crear(const char *nombre, int victorias) {
 };
 
 int entrenador_insertar_pokemon(entrenador_t *entrenador, const char *nombre,
-                                int nivel, int defensa, int fuerza, int inteligencia,
-                                int velocidad) {
+                                int nivel, int defensa, int fuerza,
+                                int inteligencia, int velocidad) {
   if (!entrenador || !nombre)
     return ERROR;
 
   pokemon_t *nuevo_pokemon = calloc(1, sizeof(pokemon_t));
   if (!nuevo_pokemon)
     return ERROR;
-
 
   nuevo_pokemon->orden = entrenador->ultimoId;
   nuevo_pokemon->nombre = duplicar_str(nombre);
@@ -88,20 +94,13 @@ int entrenador_insertar_pokemon(entrenador_t *entrenador, const char *nombre,
   nuevo_pokemon->inteligencia = inteligencia;
   nuevo_pokemon->velocidad = velocidad;
   entrenador->ultimoId++;
-// TODO: pasar pokemon hash a abb
-  int resultado = hash_insertar(entrenador->pokemones, nombre, nuevo_pokemon);
+  int resultado = arbol_insertar(entrenador->pokemones, nuevo_pokemon);
   if (resultado == ERROR) {
     free(nuevo_pokemon);
     return ERROR;
   }
-  printf("Nuevo Pokemon de %s: %s,%i,%i,%i,%i,%i, id:%zu\n",
-         entrenador->nombre,
-         nombre,
-         nivel,
-         defensa,
-         fuerza,
-         inteligencia,
-         velocidad,
+  printf("Nuevo Pokemon de %s: %s,%i,%i,%i,%i,%i, id:%zu\n", entrenador->nombre,
+         nombre, nivel, defensa, fuerza, inteligencia, velocidad,
          entrenador->ultimoId);
 
   return EXITO;
@@ -111,8 +110,15 @@ int entrenador_quitar_pokemon(entrenador_t *entrenador, const char *nombre) {
   if (!entrenador || !nombre || entrenador_cantidad_pokemones(entrenador) <= 1)
     return ERROR;
   printf("Pokemon borrar: %s\n", nombre);
-// TODO: pasar pokemon hash a abb
-  int resultado = hash_quitar(entrenador->pokemones, nombre);
+  pokemon_t *pokemon_aux = calloc(1, sizeof(pokemon_t));
+  if (!pokemon_aux)
+    return ERROR;
+  pokemon_aux->nombre = duplicar_str(nombre);
+  int resultado = -1;
+  if (arbol_buscar(entrenador->pokemones, pokemon_aux))
+   resultado = arbol_borrar(entrenador->pokemones, pokemon_aux);
+  printf("resultado %i", resultado);
+  destruir_pokemon(pokemon_aux);
   return resultado;
 };
 
@@ -137,36 +143,41 @@ bool guardar_entrenador_archivo(void *entrenador, void *archivo) {
   return false;
 }
 
-// TODO: pasar pokemon hash a abb
 size_t entrenador_cantidad_pokemones(entrenador_t *entrenador) {
   if (!entrenador)
     return 0;
-
-  return hash_cantidad(entrenador->pokemones);
+  size_t cantidad = abb_cantidad(entrenador->pokemones);
+  printf("cantidad: %lu", cantidad);
+  return cantidad;
 };
 
-// TODO: pasar pokemon hash a abb
 pokemon_t *entrenador_buscar_pokemon(entrenador_t *entrenador,
                                      const char *nombre_pokemon) {
   if (!entrenador || !nombre_pokemon)
     return NO_EXISTE;
 
-  return hash_obtener(entrenador->pokemones, nombre_pokemon);
+  pokemon_t *pokemon_aux = calloc(1, sizeof(pokemon_t));
+  if (!pokemon_aux)
+    return NO_EXISTE;
+  pokemon_aux->nombre = duplicar_str(nombre_pokemon);
+  pokemon_t *pokemon_obtenido =
+      arbol_buscar(entrenador->pokemones, (void *)pokemon_aux);
+  destruir_pokemon(pokemon_aux);
+  return pokemon_obtenido;
 };
 
 /*
-** Recibe dos pokemones, devuelve >0 si el primer pokemon es mayor, devuelve <0 si es menor
- */
+** Recibe dos pokemones, devuelve >0 si el primer pokemon es mayor, devuelve <0
+*si es menor
+*/
 int comparador_por_orden(void *pokemon1, void *pokemon2) {
   pokemon_t *p1 = pokemon1;
   pokemon_t *p2 = pokemon2;
   return (int)p1->orden - (int)p2->orden;
 }
 
-// TODO: pasar pokemon hash a abb
-bool insertar_abb_desde_hash(hash_t *hash, const char *clave, void *abb) {
-  pokemon_t *pokemon = hash_obtener(hash, clave);
-  printf("pokemon->orden %lu\n",pokemon->orden);
+bool insertar_abb_desde_hash(void *pokemon, void *abb) {
+  printf("pokemon->orden %lu\n", ((pokemon_t *)pokemon)->orden);
   int resultado = arbol_insertar((abb_t *)abb, pokemon);
   if (resultado == ERROR)
     return true;
@@ -185,9 +196,10 @@ lista_t *entrenador_lista_ordenada_pokemones(entrenador_t *entrenador,
   arbol_pokemones = arbol_crear(comparador_por_orden, NULL);
 
   // TODO: pasar pokemon hash a abb
-  printf("hash a abb\n");
-  size_t cantidad_arbol = hash_con_cada_clave(
-      entrenador->pokemones, insertar_abb_desde_hash, arbol_pokemones);
+  printf("abb a abb\n");
+  size_t cantidad_arbol =
+      abb_con_cada_elemento(entrenador->pokemones, ABB_RECORRER_INORDEN,
+                            insertar_abb_desde_hash, arbol_pokemones);
 
   if (cantidad_arbol != entrenador_cantidad_pokemones(entrenador)) {
     arbol_destruir(arbol_pokemones);
@@ -224,7 +236,7 @@ void entrenador_destruir(entrenador_t *entrenador) {
   if (!entrenador)
     return;
   free((void *)entrenador->nombre);
-  hash_destruir(entrenador->pokemones);
+  arbol_destruir(entrenador->pokemones);
   free(entrenador);
 };
 
