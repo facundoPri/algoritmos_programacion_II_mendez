@@ -41,13 +41,13 @@ void DadoEntrenadorYAtributosDePokemonsValidos_CuandoAgregoPokemonAEntrenador_En
                "Se incremento la cantidad de pokemones");
   pa2m_afirmar(entrenador_insertar_pokemon(entrenador, "Pokemon", 2, 2, 2, 2,
                                            2) == EXITO,
-               "Si se inserta pokemon con mismo nombre se reescribe");
-  pa2m_afirmar(entrenador_cantidad_pokemones(entrenador) == 1,
+               "Si se inserta pokemon con mismo nombre se inserta");
+  pa2m_afirmar(entrenador_cantidad_pokemones(entrenador) == 2,
                "No se incremento la cantidad de pokemones");
   pa2m_afirmar(entrenador_insertar_pokemon(entrenador, "OtroPokemon", 1, 1, 1,
                                            1, 1) == EXITO,
                "Se pudo insertar pokemon");
-  pa2m_afirmar(entrenador_cantidad_pokemones(entrenador) == 2,
+  pa2m_afirmar(entrenador_cantidad_pokemones(entrenador) == 3,
                "Se incremento la cantidad de pokemones");
   entrenador_destruir(entrenador);
 }
