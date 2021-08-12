@@ -252,17 +252,10 @@ void DadoUnStringInvalido_CuandoIntentoSepararEnLista_EntoncesObtengoNULL() {
                "Si se pasa un string null no se puede separar");
 }
 
-bool print_lista(void *elemento, void *contexto) {
-  contexto = contexto;
-  printf("%s\n", (char *)elemento);
-
-  return true;
-}
 
 void DadoUnStringVacio_CuandoIntentoSepararEnLista_EntoncesObtengoListaConUnElemento() {
   lista_t *lista = split("", ',');
   pa2m_afirmar(lista_elementos(lista) == 1, "Lista vacia contiene un elemento");
-  /* lista_con_cada_elemento(lista, print_lista, NULL); */
   destruir_lista_split(lista);
 }
 
@@ -280,19 +273,14 @@ void DadoUnStringYSeparadorValidos_CuandoIntentoSepararEnLista_EntoncesObtengoLi
 
   pa2m_afirmar(lista_elementos(lista1) == 2,
                "Lista tiene cantidad de elementos deseada[1]");
-  /* lista_con_cada_elemento(lista1, print_lista, NULL); */
   pa2m_afirmar(lista_elementos(lista2) == 2,
                "Lista tiene cantidad de elementos deseada[2]");
-  /* lista_con_cada_elemento(lista2, print_lista, NULL); */
   pa2m_afirmar(lista_elementos(lista3) == 2,
                "Lista tiene cantidad de elementos deseada[3]");
-  /* lista_con_cada_elemento(lista3, print_lista, NULL); */
   pa2m_afirmar(lista_elementos(lista4) == 1,
                "Lista tiene cantidad de elementos deseada[4]");
-  /* lista_con_cada_elemento(lista4, print_lista, NULL); */
   pa2m_afirmar(lista_elementos(lista5) == 3,
                "Lista tiene cantidad de elementos deseada[5]");
-  /* lista_con_cada_elemento(lista5, print_lista, NULL); */
 
   destruir_lista_split(lista1);
   destruir_lista_split(lista2);
@@ -600,7 +588,6 @@ void testear_commando_equipo(salon_t *salon) {
       resultado1 &&
           strcmp(resultado1, "pokemon1,1,2,3,4,5\npokemon2,5,4,3,2,1\n") == 0,
       "El resultado coincide");
-  printf("%s",resultado1);
   free(resultado1);
   // Que pasa si no encuentra entrenado con ese nombre
   char *resultado2 = salon_ejecutar_comando(salon, "EQUIPO:entrenador1000");
@@ -649,12 +636,10 @@ void testear_commando_comparar(salon_t *salon) {
   // Que pasa si paso entrenadores validos y regla valida
   char *resultado3 =
       salon_ejecutar_comando(salon, "COMPARAR:entrenador1,entrenador2,CLASICO");
-  printf("Comparar Clasico: %s",resultado3);
   pa2m_afirmar(resultado3, "Resultado existe");
   free(resultado3);
   char *resultado4 =
       salon_ejecutar_comando(salon, "COMPARAR:entrenador1,entrenador2,MODERNO");
-  printf("Comparar Moderno: %s",resultado4);
   pa2m_afirmar(resultado4, "Resultado existe");
   free(resultado4);
   char *resultado5 = salon_ejecutar_comando(
@@ -725,7 +710,6 @@ void testear_commando_guardar(salon_t *salon) {
   pa2m_afirmar(resultado1 == NO_EXISTE,
                "Si no se pasa archivo no se puede guardar");
   // Que pasa llamo comando
-  printf("puebas 2\n");
   char *resultado2 = salon_ejecutar_comando(
       salon, "GUARDAR:archivos_pruebas/guardado_con_comando.csv");
   pa2m_afirmar(resultado2 && strcmp(resultado2, "OK") == 0,

@@ -99,9 +99,6 @@ int entrenador_insertar_pokemon(entrenador_t *entrenador, const char *nombre,
     free(nuevo_pokemon);
     return ERROR;
   }
-  printf("Nuevo Pokemon de %s: %s,%i,%i,%i,%i,%i, id:%zu\n", entrenador->nombre,
-         nombre, nivel, defensa, fuerza, inteligencia, velocidad,
-         entrenador->ultimoId);
 
   return EXITO;
 };
@@ -109,7 +106,6 @@ int entrenador_insertar_pokemon(entrenador_t *entrenador, const char *nombre,
 int entrenador_quitar_pokemon(entrenador_t *entrenador, const char *nombre) {
   if (!entrenador || !nombre || entrenador_cantidad_pokemones(entrenador) <= 1)
     return ERROR;
-  printf("Pokemon borrar: %s\n", nombre);
   pokemon_t *pokemon_aux = calloc(1, sizeof(pokemon_t));
   if (!pokemon_aux)
     return ERROR;
@@ -117,7 +113,6 @@ int entrenador_quitar_pokemon(entrenador_t *entrenador, const char *nombre) {
   int resultado = -1;
   if (arbol_buscar(entrenador->pokemones, pokemon_aux))
    resultado = arbol_borrar(entrenador->pokemones, pokemon_aux);
-  printf("resultado %i", resultado);
   destruir_pokemon(pokemon_aux);
   return resultado;
 };
@@ -147,7 +142,6 @@ size_t entrenador_cantidad_pokemones(entrenador_t *entrenador) {
   if (!entrenador)
     return 0;
   size_t cantidad = abb_cantidad(entrenador->pokemones);
-  printf("cantidad: %lu", cantidad);
   return cantidad;
 };
 
@@ -177,7 +171,6 @@ int comparador_por_orden(void *pokemon1, void *pokemon2) {
 }
 
 bool insertar_abb_desde_hash(void *pokemon, void *abb) {
-  printf("pokemon->orden %lu\n", ((pokemon_t *)pokemon)->orden);
   int resultado = arbol_insertar((abb_t *)abb, pokemon);
   if (resultado == ERROR)
     return true;
@@ -195,8 +188,6 @@ lista_t *entrenador_lista_ordenada_pokemones(entrenador_t *entrenador,
   abb_t *arbol_pokemones;
   arbol_pokemones = arbol_crear(comparador_por_orden, NULL);
 
-  // TODO: pasar pokemon hash a abb
-  printf("abb a abb\n");
   size_t cantidad_arbol =
       abb_con_cada_elemento(entrenador->pokemones, ABB_RECORRER_INORDEN,
                             insertar_abb_desde_hash, arbol_pokemones);
