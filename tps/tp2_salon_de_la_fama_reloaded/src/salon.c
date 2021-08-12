@@ -17,10 +17,13 @@ static hash_t *reglas_hash = NULL;
 
 typedef char *(*comando_ejecutar_t)(const char *, salon_t *);
 
-/* typedef struct comando { */
-/*   const char *nombre; */
-/*   comando_ejecutar_t ejecutar; */
-/* } comando_t; */
+typedef int (*comparador_pokemon)(pokemon_t *, pokemon_t *);
+
+typedef struct regla {
+  char *nombre;
+  char *descripcion;
+  comparador_pokemon comparador;
+} regla_t;
 
 struct _salon_t {
   abb_t *entrenadores;
@@ -33,6 +36,18 @@ int comparador_entrenadores_abb(void *entrenador1, void *entrenador2) {
 
 void destructor_entrenador_abb(void *entrenador) {
   entrenador_destruir((entrenador_t *)entrenador);
+}
+
+entrenador_t *salon_buscar_entrenador(salon_t *salon,
+                                      const char *entrenador_nombre) {
+  if (!salon || !salon->entrenadores)
+    return NULL;
+
+  entrenador_t *entrenador_aux = entrenador_crear(entrenador_nombre, 0);
+  entrenador_t *entrenador = arbol_buscar(salon->entrenadores, entrenador_aux);
+
+  entrenador_destruir(entrenador_aux);
+  return entrenador;
 }
 
 /*
@@ -62,20 +77,20 @@ int insertar_pokemon_con_lista(lista_t *lista_info, entrenador_t *entrenador,
   int nivel = atoi(lista_elemento_en_posicion(lista_info, 1));
   if (nivel == 0)
     return ERROR;
-  int fuerza = atoi(lista_elemento_en_posicion(lista_info, 2));
-  if (fuerza == 0)
-    return ERROR;
-  int inteligencia = atoi(lista_elemento_en_posicion(lista_info, 3));
-  if (inteligencia == 0)
-    return ERROR;
-  int velocidad = atoi(lista_elemento_en_posicion(lista_info, 4));
-  if (velocidad == 0)
-    return ERROR;
-  int defensa = atoi(lista_elemento_en_posicion(lista_info, 5));
+  int defensa = atoi(lista_elemento_en_posicion(lista_info, 2));
   if (defensa == 0)
     return ERROR;
-  int resultado = entrenador_insertar_pokemon(entrenador, nombre, nivel, fuerza,
-                                              inteligencia, velocidad, defensa);
+  int fuerza = atoi(lista_elemento_en_posicion(lista_info, 3));
+  if (fuerza == 0)
+    return ERROR;
+  int inteligencia = atoi(lista_elemento_en_posicion(lista_info, 4));
+  if (inteligencia == 0)
+    return ERROR;
+  int velocidad = atoi(lista_elemento_en_posicion(lista_info, 5));
+  if (velocidad == 0)
+    return ERROR;
+  int resultado = entrenador_insertar_pokemon(
+      entrenador, nombre, nivel, defensa, fuerza, inteligencia, velocidad);
   (*cantidad_pokemones)++;
   return resultado;
 }
@@ -116,7 +131,11 @@ int pasar_archivo_a_salon(salon_t *salon, FILE *archivo) {
         }
       }
       entrenador_actual = crear_entrenador_con_lista(linea_actual);
-      if (!entrenador_actual) {
+      if (!entrenador_actual ||
+          salon_buscar_entrenador(salon,
+                                  entrenador_nombre(entrenador_actual))) {
+        if (entrenador_actual)
+          entrenador_destruir(entrenador_actual);
         destruir_csv_lista(archivo_salon_lista);
         lista_iterador_destruir(iterador_archivo_csv);
         return ERROR;
@@ -167,7 +186,6 @@ bool string_es_numero(char *num) {
 bool entrenador_tiene_victorias(entrenador_t *entrenador, void *victorias) {
   if (!entrenador || !victorias)
     return false;
-  printf("%s\n", entrenador_nombre(entrenador));
   if (entrenador_victorias(entrenador) >= atoi(victorias))
     return true;
   return false;
@@ -176,7 +194,7 @@ bool entrenador_tiene_victorias(entrenador_t *entrenador, void *victorias) {
 bool entrenador_tiene_pokemon(entrenador_t *entrenador, void *pokemon) {
   if (!entrenador || !pokemon)
     return false;
-  if (entrenador_tiene_pokemon(entrenador, pokemon))
+  if (entrenador_buscar_pokemon(entrenador, pokemon))
     return true;
   return false;
 }
@@ -187,51 +205,53 @@ bool print_listas(void *elemento, void *contexto) {
 
   return true;
 }
-bool formatear_entrenador_con_victorias(void *entrenador, void *string) {
-  if (!entrenador || !string)
-    return false;
-  char *entrenador_string = malloc(500);
-  if (!entrenador_string)
-    return false;
-  int resultado =
-      sprintf(entrenador_string, "%s,%i\n", entrenador_nombre(entrenador),
-              entrenador_victorias(entrenador));
-  if (resultado > 0)
-    return false;
-  strcat(string, entrenador_string);
-  /* sprintf(string, "%s%s", (char *)string, entrenador_string); */
-  free(entrenador_string);
-  return true;
-}
-bool formatear_entrenador_sin_victorias(void *entrenador, void *string) {
-  if (!entrenador || !string)
-    return false;
-  char *entrenador_string = malloc(500);
-  if (!entrenador_string)
-    return false;
-  int resultado =
-      sprintf(entrenador_string, "%s\n", entrenador_nombre(entrenador));
-  if (resultado > 0)
-    return false;
-  strcat(string, entrenador_string);
-  /* sprintf(string, "%s%s", (char *)string, entrenador_string); */
-  free(entrenador_string);
-  return true;
-}
 
 char *juntar_entrenadores(lista_t *entrenadores, bool mostrar_victorias) {
   if (!entrenadores)
     return NULL;
-  char *string_final = malloc(5000);
+  char *string_final = calloc(1000, 1);
+  strcpy(string_final, "");
+
   if (!string_final)
     return NULL;
-  if (mostrar_victorias)
-    lista_con_cada_elemento(entrenadores, formatear_entrenador_con_victorias,
-                            string_final);
-  else
-    lista_con_cada_elemento(entrenadores, formatear_entrenador_sin_victorias,
-                            string_final);
+
+  lista_iterador_t *iterador_lista_entrenadores;
+
+  for (iterador_lista_entrenadores = lista_iterador_crear(entrenadores);
+       lista_iterador_tiene_siguiente(iterador_lista_entrenadores);
+       lista_iterador_avanzar(iterador_lista_entrenadores)) {
+
+    entrenador_t *entrenador =
+        lista_iterador_elemento_actual(iterador_lista_entrenadores);
+
+    char entrenador_string[100];
+    int resultado;
+    if (mostrar_victorias) {
+      resultado =
+          sprintf(entrenador_string, "%s,%i\n", entrenador_nombre(entrenador),
+                  entrenador_victorias(entrenador));
+    } else {
+      resultado =
+          sprintf(entrenador_string, "%s\n", entrenador_nombre(entrenador));
+    }
+
+    if (resultado < 0) {
+      free(string_final);
+      lista_iterador_destruir(iterador_lista_entrenadores);
+    }
+
+    if (string_final)
+      strcat(string_final, entrenador_string);
+  }
+  lista_iterador_destruir(iterador_lista_entrenadores);
   return string_final;
+}
+
+bool print_entrenador(void *entrenador, void *contexto) {
+  contexto = contexto;
+  printf("%s,%d\n", entrenador_nombre(entrenador),
+         entrenador_victorias(entrenador));
+  return true;
 }
 
 char *ejecutar_comando_entrenador(const char *parametros, salon_t *salon) {
@@ -244,40 +264,297 @@ char *ejecutar_comando_entrenador(const char *parametros, salon_t *salon) {
   char *string_final = NULL;
 
   if (!primer_parametro && !segundo_parametro) {
-    printf("ENTRENADORES");
     entrenadores = salon_filtrar_entrenadores(salon, NULL, NULL);
   } else if (strcmp(primer_parametro, "victorias") == 0 && segundo_parametro &&
-             atoi(segundo_parametro) > 0) {
-    printf("ENTRENADORES:victorias");
+             isdigit(*segundo_parametro) > 0) {
     entrenadores = salon_filtrar_entrenadores(salon, entrenador_tiene_victorias,
                                               segundo_parametro);
   } else if (strcmp(primer_parametro, "pokemon") == 0 && segundo_parametro) {
-    printf("ENTRENADORES:pokemon");
     entrenadores = salon_filtrar_entrenadores(salon, entrenador_tiene_pokemon,
                                               segundo_parametro);
+  } else {
+    lista_destruir(entrenadores);
+    destruir_lista_split(parametros_elementos);
+    return NULL;
   }
 
-  if (entrenadores) {
-    if (!primer_parametro && !segundo_parametro) {
-      /* lista_con_cada_elemento(entrenadores, print_listas, NULL); */
-      string_final = juntar_entrenadores(entrenadores, true);
-    } else {
-      string_final = juntar_entrenadores(entrenadores, false);
-    }
+  if (!primer_parametro && !segundo_parametro) {
+    string_final = juntar_entrenadores(entrenadores, true);
+  } else {
+    string_final = juntar_entrenadores(entrenadores, false);
   }
 
+  lista_destruir(entrenadores);
   destruir_lista_split(parametros_elementos);
   return string_final;
 }
 
-int agregar_comando(hash_t *hash, const char *nombre,
-                    comando_ejecutar_t funcion) {
-  if (!hash || !nombre || !funcion)
-    return -1;
-  return hash_insertar(comandos_hash, nombre, funcion);
+char *juntar_pokemones(lista_t *pokemones) {
+  if (!pokemones)
+    return NULL;
+  char *string_final = calloc(1000, 1);
+  if (!string_final)
+    return NULL;
+
+  lista_iterador_t *iterador_lista_pokemones;
+  hash_t *hash_pokemon = NULL;
+
+  for (iterador_lista_pokemones = lista_iterador_crear(pokemones);
+       lista_iterador_tiene_siguiente(iterador_lista_pokemones);
+       lista_iterador_avanzar(iterador_lista_pokemones)) {
+
+    pokemon_t *pokemon =
+        lista_iterador_elemento_actual(iterador_lista_pokemones);
+
+    hash_t *hash_pokemon = entrenador_pokemon_a_hash(pokemon);
+    char pokemon_string[100];
+    int resultado = sprintf(pokemon_string, "%s,%i,%i,%i,%i,%i\n",
+                            (char *)hash_obtener(hash_pokemon, "nombre"),
+                            *(int *)hash_obtener(hash_pokemon, "nivel"),
+                            *(int *)hash_obtener(hash_pokemon, "defensa"),
+                            *(int *)hash_obtener(hash_pokemon, "fuerza"),
+                            *(int *)hash_obtener(hash_pokemon, "inteligencia"),
+                            *(int *)hash_obtener(hash_pokemon, "velocidad"));
+    if (resultado < 0) {
+      free(string_final);
+      hash_destruir(hash_pokemon);
+      lista_iterador_destruir(iterador_lista_pokemones);
+    }
+
+    if (string_final)
+      strcat(string_final, pokemon_string);
+    hash_destruir(hash_pokemon);
+  }
+
+  if (hash_pokemon)
+    hash_destruir(hash_pokemon);
+  lista_iterador_destruir(iterador_lista_pokemones);
+  return string_final;
 }
 
-// TODO Crear inicializadores
+bool print_pokemon(void* pokemon, void*contexto){
+  contexto = contexto;
+  hash_t * hash_pokemon = entrenador_pokemon_a_hash((pokemon_t * )pokemon);
+
+  printf("Pokemon: %s,%i,%i,%i,%i,%i,orden:%i\n",
+         (char *)hash_obtener(hash_pokemon, "nombre"),
+         *(int *)hash_obtener(hash_pokemon, "nivel"),
+         *(int *)hash_obtener(hash_pokemon, "defensa"),
+         *(int *)hash_obtener(hash_pokemon, "fuerza"),
+         *(int *)hash_obtener(hash_pokemon, "inteligencia"),
+         *(int *)hash_obtener(hash_pokemon, "velocidad"),
+         *(int *)hash_obtener(hash_pokemon, "orden"));
+
+  hash_destruir(hash_pokemon);
+  return true;
+}
+
+char *ejecutar_comando_equipo(const char *parametros, salon_t *salon) {
+  if (!salon)
+    return NULL;
+
+  lista_t *parametros_elementos = split(parametros, ',');
+  char *nombre = lista_elemento_en_posicion(parametros_elementos, 0);
+  char *string_final = NULL;
+  entrenador_t *entrenador = salon_buscar_entrenador(salon, nombre);
+
+  lista_t *pokemones = NULL;
+
+  if (entrenador) {
+    pokemones = entrenador_lista_ordenada_pokemones(entrenador, 0);
+  }
+
+  if (pokemones) {
+    lista_con_cada_elemento(pokemones, print_pokemon, NULL);
+    string_final = juntar_pokemones(pokemones);
+  }
+  lista_destruir(pokemones);
+  destruir_lista_split(parametros_elementos);
+  return string_final;
+}
+
+bool hash_reglas_a_lista(hash_t *hash, const char *clave, void *lista) {
+  int resultado = lista_insertar(lista, hash_obtener(hash, clave));
+  if (resultado == -1) {
+    return true;
+  }
+  return false;
+}
+char *juntar_reglas(lista_t *reglas) {
+  if (!reglas)
+    return NULL;
+  char *string_final = calloc(1000, 1);
+  if (!string_final)
+    return NULL;
+
+  lista_iterador_t *iterador_lista_reglas;
+
+  for (iterador_lista_reglas = lista_iterador_crear(reglas);
+       lista_iterador_tiene_siguiente(iterador_lista_reglas);
+       lista_iterador_avanzar(iterador_lista_reglas)) {
+
+    regla_t *regla = lista_iterador_elemento_actual(iterador_lista_reglas);
+
+    strcat(string_final, regla->nombre);
+    strcat(string_final, ",");
+    strcat(string_final, regla->descripcion);
+    strcat(string_final, "\n");
+  }
+
+  lista_iterador_destruir(iterador_lista_reglas);
+  return string_final;
+}
+
+char *ejecutar_comando_reglas(const char *parametro, salon_t *salon) {
+  parametro = parametro;
+  salon = salon;
+  if (hash_cantidad(reglas_hash) == 0)
+    return NO_EXISTE;
+  char *string_final = NULL;
+
+  lista_t *lista_reglas = lista_crear();
+  size_t cantidad =
+      hash_con_cada_clave(reglas_hash, hash_reglas_a_lista, lista_reglas);
+
+  if (cantidad != hash_cantidad(reglas_hash)) {
+    lista_destruir(lista_reglas);
+    return NO_EXISTE;
+  }
+  string_final = juntar_reglas(lista_reglas);
+
+  lista_destruir(lista_reglas);
+  return string_final;
+}
+
+char *ejecutar_comando_comparar(const char *parametros, salon_t *salon) {
+  if (!salon)
+    return NO_EXISTE;
+  lista_t *parametros_elementos = split(parametros, ',');
+  char *tercer_parametro = lista_elemento_en_posicion(parametros_elementos, 2);
+  if (lista_elementos(parametros_elementos) != 3 ||
+      !hash_obtener(reglas_hash, tercer_parametro)) {
+    destruir_lista_split(parametros_elementos);
+    return NO_EXISTE;
+  }
+
+  char *primer_parametro = lista_elemento_en_posicion(parametros_elementos, 0);
+  char *segundo_parametro = lista_elemento_en_posicion(parametros_elementos, 1);
+
+  char *string_final = calloc(1000, 1);
+  if (!string_final) {
+    destruir_lista_split(parametros_elementos);
+    return NO_EXISTE;
+  }
+
+  entrenador_t *entrenador1 = salon_buscar_entrenador(salon, primer_parametro);
+  entrenador_t *entrenador2 = salon_buscar_entrenador(salon, segundo_parametro);
+  if (!entrenador1 || !entrenador2) {
+    free(string_final);
+    destruir_lista_split(parametros_elementos);
+    return NO_EXISTE;
+  }
+
+  lista_t *lista_pokemones_entrenador1 =
+      entrenador_lista_ordenada_pokemones(entrenador1, 0);
+  lista_t *lista_pokemones_entrenador2 =
+      entrenador_lista_ordenada_pokemones(entrenador2, 0);
+
+  regla_t *regla = hash_obtener(reglas_hash, tercer_parametro);
+  pokemon_t *pokemon1_actual = lista_tope(lista_pokemones_entrenador1);
+  pokemon_t *pokemon2_actual = lista_tope(lista_pokemones_entrenador2);
+  while (pokemon1_actual && pokemon2_actual) {
+
+    int resultado = regla->comparador(pokemon1_actual, pokemon2_actual);
+    char resultado_string[10];
+    sprintf(resultado_string, "%i\n", resultado);
+    strcat(string_final, resultado_string);
+    if (resultado == 1) {
+      lista_desapilar(lista_pokemones_entrenador2);
+    } else {
+      lista_desapilar(lista_pokemones_entrenador1);
+    }
+    pokemon1_actual = lista_tope(lista_pokemones_entrenador1);
+    pokemon2_actual = lista_tope(lista_pokemones_entrenador2);
+  }
+
+  lista_destruir(lista_pokemones_entrenador1);
+  lista_destruir(lista_pokemones_entrenador2);
+  destruir_lista_split(parametros_elementos);
+  return string_final;
+}
+
+char *ejecutar_comando_agregar_pokemon(const char *parametros, salon_t *salon) {
+  if (!salon)
+    return NO_EXISTE;
+  lista_t *parametros_elementos = split(parametros, ',');
+  if (lista_elementos(parametros_elementos) < 7) {
+    destruir_lista_split(parametros_elementos);
+    return NO_EXISTE;
+  }
+
+  char *nombre_entrenador = lista_elemento_en_posicion(parametros_elementos, 0);
+  char *nombre_pokemon = lista_elemento_en_posicion(parametros_elementos, 1);
+  char *nivel = lista_elemento_en_posicion(parametros_elementos, 2);
+  char *defensa = lista_elemento_en_posicion(parametros_elementos, 3);
+  char *fuerza = lista_elemento_en_posicion(parametros_elementos, 4);
+  char *inteligencia = lista_elemento_en_posicion(parametros_elementos, 5);
+  char *velocidad = lista_elemento_en_posicion(parametros_elementos, 6);
+
+  if (isdigit(*nivel) == 0 || isdigit(*defensa) == 0 || isdigit(*fuerza) == 0 ||
+      isdigit(*inteligencia) == 0 || isdigit(*velocidad) == 0) {
+    destruir_lista_split(parametros_elementos);
+    return NO_EXISTE;
+  }
+  entrenador_t *entrenador = salon_buscar_entrenador(salon, nombre_entrenador);
+  if (!entrenador) {
+    destruir_lista_split(parametros_elementos);
+    return NO_EXISTE;
+  }
+  int resultado = entrenador_insertar_pokemon(
+      entrenador, nombre_pokemon, atoi(nivel), atoi(defensa), atoi(fuerza),
+      atoi(inteligencia), atoi(velocidad));
+  destruir_lista_split(parametros_elementos);
+  if (resultado == -1)
+    return NO_EXISTE;
+  return duplicar_str("OK\n");
+}
+
+char *ejecutar_comando_quitar_pokemon(const char *parametros, salon_t *salon) {
+  if (!salon)
+    return NO_EXISTE;
+  lista_t *parametros_elementos = split(parametros, ',');
+  if (lista_elementos(parametros_elementos) != 2) {
+    destruir_lista_split(parametros_elementos);
+    return NO_EXISTE;
+  }
+
+  char *nombre_entrenador = lista_elemento_en_posicion(parametros_elementos, 0);
+  char *nombre_pokemon = lista_elemento_en_posicion(parametros_elementos, 1);
+
+  entrenador_t *entrenador = salon_buscar_entrenador(salon, nombre_entrenador);
+  if (!entrenador) {
+    destruir_lista_split(parametros_elementos);
+    return NO_EXISTE;
+  }
+  int resultado = entrenador_quitar_pokemon(entrenador, nombre_pokemon);
+
+  destruir_lista_split(parametros_elementos);
+  if (resultado == -1)
+    return NO_EXISTE;
+  return duplicar_str("OK\n");
+}
+
+char *ejecutar_comando_guardar(const char *nombre_archivo, salon_t *salon) {
+  if (!salon || !*nombre_archivo)
+    return NO_EXISTE;
+
+  int resultado = salon_guardar_archivo(salon, nombre_archivo);
+
+  if (resultado == -1)
+    return NO_EXISTE;
+  return duplicar_str("OK\n");
+}
+
 /*
 ** Recibe el hash comandos globas y lo inicializa si este no existe
 */
@@ -285,16 +562,220 @@ int inicializar_comandos(hash_t *comandos) {
   if (comandos)
     return 0;
   comandos_hash = hash_crear(NULL, 10);
-  agregar_comando(comandos_hash, "ENTRENADORES", ejecutar_comando_entrenador);
+  if (!comandos_hash)
+    return -1;
+  hash_insertar(comandos_hash, "ENTRENADORES", ejecutar_comando_entrenador);
+  hash_insertar(comandos_hash, "EQUIPO", ejecutar_comando_equipo);
+  hash_insertar(comandos_hash, "REGLAS", ejecutar_comando_reglas);
+  hash_insertar(comandos_hash, "COMPARAR", ejecutar_comando_comparar);
+  hash_insertar(comandos_hash, "AGREGAR_POKEMON",
+                ejecutar_comando_agregar_pokemon);
+  hash_insertar(comandos_hash, "QUITAR_POKEMON",
+                ejecutar_comando_quitar_pokemon);
+  hash_insertar(comandos_hash, "GUARDAR", ejecutar_comando_guardar);
 
   return 0;
 }
+
+/*
+** Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
+*segundo
+*/
+int comparador_clasico(pokemon_t *pokemon1, pokemon_t *pokemon2) {
+  hash_t *hash_pokemon1 = entrenador_pokemon_a_hash(pokemon1);
+  hash_t *hash_pokemon2 = entrenador_pokemon_a_hash(pokemon2);
+
+  printf("Pokemon1: %s,%i,%i,%i,%i,%i\n",
+         (char *)hash_obtener(hash_pokemon1, "nombre"),
+         *(int *)hash_obtener(hash_pokemon1, "nivel"),
+         *(int *)hash_obtener(hash_pokemon1, "defensa"),
+         *(int *)hash_obtener(hash_pokemon1, "fuerza"),
+         *(int *)hash_obtener(hash_pokemon1, "inteligencia"),
+         *(int *)hash_obtener(hash_pokemon1, "velocidad"));
+
+  printf("Pokemon2: %s,%i,%i,%i,%i,%i\n",
+         (char *)hash_obtener(hash_pokemon2, "nombre"),
+         *(int *)hash_obtener(hash_pokemon2, "nivel"),
+         *(int *)hash_obtener(hash_pokemon2, "defensa"),
+         *(int *)hash_obtener(hash_pokemon2, "fuerza"),
+         *(int *)hash_obtener(hash_pokemon2, "inteligencia"),
+         *(int *)hash_obtener(hash_pokemon2, "velocidad"));
+
+  double coeficiente_de_batalla_pokemon1 =
+      (0.8 * (*(int *)hash_obtener(hash_pokemon1, "nivel")) +
+       (*(int *)hash_obtener(hash_pokemon1, "fuerza")) +
+       2 * (*(int *)hash_obtener(hash_pokemon1, "velocidad")));
+
+  double coeficiente_de_batalla_pokemon2 =
+      (0.8 * (*(int *)hash_obtener(hash_pokemon2, "nivel")) +
+       (*(int *)hash_obtener(hash_pokemon2, "fuerza")) +
+       2 * (*(int *)hash_obtener(hash_pokemon2, "velocidad")));
+
+  printf("coefiente1: %f\n", coeficiente_de_batalla_pokemon1);
+  printf("coefiente2: %f\n", coeficiente_de_batalla_pokemon2);
+  hash_destruir(hash_pokemon1);
+  hash_destruir(hash_pokemon2);
+  if (coeficiente_de_batalla_pokemon1 >= coeficiente_de_batalla_pokemon2) {
+    printf("1\n");
+    return 1;
+  } else {
+    printf("2\n");
+    return 2;
+  }
+}
+/*
+** Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
+*segundo
+*/
+int comparador_moderno(pokemon_t *pokemon1, pokemon_t *pokemon2) {
+  hash_t *hash_pokemon1 = entrenador_pokemon_a_hash(pokemon1);
+  hash_t *hash_pokemon2 = entrenador_pokemon_a_hash(pokemon2);
+
+  printf("Pokemon1: %s,%i,%i,%i,%i,%i\n",
+         (char *)hash_obtener(hash_pokemon1, "nombre"),
+         *(int *)hash_obtener(hash_pokemon1, "nivel"),
+         *(int *)hash_obtener(hash_pokemon1, "defensa"),
+         *(int *)hash_obtener(hash_pokemon1, "fuerza"),
+         *(int *)hash_obtener(hash_pokemon1, "inteligencia"),
+         *(int *)hash_obtener(hash_pokemon1, "velocidad"));
+
+  printf("Pokemon2: %s,%i,%i,%i,%i,%i\n",
+         (char *)hash_obtener(hash_pokemon2, "nombre"),
+         *(int *)hash_obtener(hash_pokemon2, "nivel"),
+         *(int *)hash_obtener(hash_pokemon2, "defensa"),
+         *(int *)hash_obtener(hash_pokemon2, "fuerza"),
+         *(int *)hash_obtener(hash_pokemon2, "inteligencia"),
+         *(int *)hash_obtener(hash_pokemon2, "velocidad"));
+
+  double coeficiente_de_batalla_pokemon1 =
+      (0.5 * (*(int *)hash_obtener(hash_pokemon1, "nivel")) +
+       0.9 * (*(int *)hash_obtener(hash_pokemon1, "defensa")) +
+       3 * (*(int *)hash_obtener(hash_pokemon1, "inteligencia")));
+
+  double coeficiente_de_batalla_pokemon2 =
+      (0.5 * (*(int *)hash_obtener(hash_pokemon2, "nivel")) +
+       0.9 * (*(int *)hash_obtener(hash_pokemon2, "defensa")) +
+       3 * (*(int *)hash_obtener(hash_pokemon2, "inteligencia")));
+
+  printf("coefiente1: %f\n", coeficiente_de_batalla_pokemon1);
+  printf("coefiente2: %f\n", coeficiente_de_batalla_pokemon2);
+  hash_destruir(hash_pokemon1);
+  hash_destruir(hash_pokemon2);
+  if (coeficiente_de_batalla_pokemon1 >= coeficiente_de_batalla_pokemon2) {
+    printf("1\n");
+    return 1;
+  } else {
+    printf("2\n");
+    return 2;
+  }
+}
+/*
+** Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
+*segundo
+*/
+int comparador_estratega(pokemon_t *pokemon1, pokemon_t *pokemon2) {
+  hash_t *hash_pokemon1 = entrenador_pokemon_a_hash(pokemon1);
+  hash_t *hash_pokemon2 = entrenador_pokemon_a_hash(pokemon2);
+
+  int coeficiente_de_batalla_pokemon1 =
+      (*(int *)hash_obtener(hash_pokemon1, "inteligencia"));
+
+  int coeficiente_de_batalla_pokemon2 =
+      (*(int *)hash_obtener(hash_pokemon2, "inteligencia"));
+
+  hash_destruir(hash_pokemon1);
+  hash_destruir(hash_pokemon2);
+  if (coeficiente_de_batalla_pokemon1 >= coeficiente_de_batalla_pokemon2) {
+    return 1;
+  } else {
+    return 2;
+  }
+}
+/*
+** Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
+*segundo
+*/
+int comparador_mayor_nombre(pokemon_t *pokemon1, pokemon_t *pokemon2) {
+  hash_t *hash_pokemon1 = entrenador_pokemon_a_hash(pokemon1);
+  hash_t *hash_pokemon2 = entrenador_pokemon_a_hash(pokemon2);
+
+  size_t coeficiente_de_batalla_pokemon1 =
+      strlen(hash_obtener(hash_pokemon1, "nombre"));
+
+  size_t coeficiente_de_batalla_pokemon2 =
+      strlen(hash_obtener(hash_pokemon2, "nombre"));
+
+  hash_destruir(hash_pokemon1);
+  hash_destruir(hash_pokemon2);
+  if (coeficiente_de_batalla_pokemon1 >= coeficiente_de_batalla_pokemon2) {
+    return 1;
+  } else {
+    return 2;
+  }
+}
+/*
+** Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
+*segundo
+*/
+int comparador_fuerza_bruta(pokemon_t *pokemon1, pokemon_t *pokemon2) {
+  hash_t *hash_pokemon1 = entrenador_pokemon_a_hash(pokemon1);
+  hash_t *hash_pokemon2 = entrenador_pokemon_a_hash(pokemon2);
+
+  int coeficiente_de_batalla_pokemon1 =
+      (*(int *)hash_obtener(hash_pokemon1, "fuerza"));
+
+  int coeficiente_de_batalla_pokemon2 =
+      (*(int *)hash_obtener(hash_pokemon2, "fuerza"));
+
+  hash_destruir(hash_pokemon1);
+  hash_destruir(hash_pokemon2);
+  if (coeficiente_de_batalla_pokemon1 >= coeficiente_de_batalla_pokemon2) {
+    return 1;
+  } else {
+    return 2;
+  }
+}
+
 /*
 ** Recibe el hash reglas globas y lo inicializa si este no existe
 */
 int inicializar_reglas(hash_t *reglas) {
   if (reglas)
     return 0;
+
+  reglas_hash = hash_crear(NULL, 10);
+  if (!reglas_hash)
+    return -1;
+  regla_t *regla_clasico = calloc(1, sizeof(regla_t));
+  regla_clasico->nombre = "CLASICO";
+  regla_clasico->descripcion = "Aplica esta formula (0,8*nivel + fuerza + "
+                               "2*velocidad) para calcular el pokemon ganador";
+  regla_clasico->comparador = comparador_clasico;
+  regla_t *regla_moderno = calloc(1, sizeof(regla_t));
+  regla_moderno->nombre = "MODERNO";
+  regla_moderno->descripcion =
+      "Aplica esta formula (0,5*nivel + 0,9*defensa + 3*inteligencia) para "
+      "calcular el pokemon ganador";
+  regla_moderno->comparador = comparador_moderno;
+  regla_t *regla_estratega = calloc(1, sizeof(regla_t));
+  regla_estratega->nombre = "ESTRATEGA";
+  regla_estratega->descripcion = "Gana el pokemon mas inteligente";
+  regla_estratega->comparador = comparador_estratega;
+  regla_t *regla_mayor_nombre = calloc(1, sizeof(regla_t));
+  regla_mayor_nombre->nombre = "MAYOR_NOMBRE";
+  regla_mayor_nombre->descripcion = "Gana el pokemon con mayor nombre";
+  regla_mayor_nombre->comparador = comparador_mayor_nombre;
+  regla_t *regla_fuerza_bruta = calloc(1, sizeof(regla_t));
+  regla_fuerza_bruta->nombre = "FUERZA_BRUTA";
+  regla_fuerza_bruta->descripcion = "Gana el pokemon mas fuerte";
+  regla_fuerza_bruta->comparador = comparador_fuerza_bruta;
+
+  hash_insertar(reglas_hash, "CLASICO", regla_clasico);
+  hash_insertar(reglas_hash, "MODERNO", regla_moderno);
+  hash_insertar(reglas_hash, "ESTRATEGA", regla_estratega);
+  hash_insertar(reglas_hash, "MAYOR_NOMBRE", regla_mayor_nombre);
+  hash_insertar(reglas_hash, "FUERZA_BRUTA", regla_fuerza_bruta);
+
   return 0;
 }
 
@@ -415,7 +896,6 @@ lista_t *salon_filtrar_entrenadores(salon_t *salon,
 }
 
 // TODO implementar join
-// TODO Implementar hash con comandos
 // TODO Implementar reglas
 char *salon_ejecutar_comando(salon_t *salon, const char *comando) {
   if (!salon || !comando || !*comando)
@@ -430,10 +910,11 @@ char *salon_ejecutar_comando(salon_t *salon, const char *comando) {
     return NULL;
   }
 
-  comando_ejecutar(lista_elemento_en_posicion(comando_elementos, 1), salon);
+  char *resultado =
+      comando_ejecutar(lista_elemento_en_posicion(comando_elementos, 1), salon);
 
   destruir_lista_split(comando_elementos);
-  return NULL;
+  return resultado;
 }
 
 void salon_destruir(salon_t *salon) {

@@ -34,7 +34,8 @@ int entrenador_insertar_pokemon(entrenador_t *entrenador, const char *nombre,
                                 int velocidad, int defensa);
 
 /**
- * Recibe un entrenador y el nombre del pokemon que se desea eliminar.
+ * Recibe un entrenador y el nombre del pokemon que se desea eliminar, devuelve
+ * 0 en caso de exito -1 en caso de error.
  */
 int entrenador_quitar_pokemon(entrenador_t *entrenador, const char *nombre);
 
@@ -89,4 +90,16 @@ int entrenador_victorias(entrenador_t *entrenador);
  */
 const char *entrenador_nombre(entrenador_t *entrenador);
 
+/*
+** Recibe un pokemon y devuelve sus atributos en un hash, caso de error devuelve
+*NULL
+*/
+hash_t *entrenador_pokemon_a_hash(pokemon_t *pokemon);
+
+/*
+** Recibe un entrenador y el nombre de su pokemon, devuelve un hash con los
+*atributos del pokemon o NULL en caso de error
+*/
+hash_t *entrenador_pokemon_atributos(entrenador_t *entrenador,
+                                     const char *nombre_pokemon);
 #endif // ENTRENADOR_H_

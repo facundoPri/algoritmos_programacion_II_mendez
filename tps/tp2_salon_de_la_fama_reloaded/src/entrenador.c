@@ -21,6 +21,7 @@ struct _pokemon_t {
 struct _entrenador_t {
   const char *nombre;
   int victorias;
+  size_t ultimoId;
   hash_t *pokemones;
 };
 
@@ -43,8 +44,8 @@ bool guardar_pokemon_archivo(void *pokemon, void *archivo) {
   if (!pokemon || !archivo)
     return false;
   pokemon_t *p = pokemon;
-  fprintf(archivo, "%s;%i;%i;%i;%i;%i\n", p->nombre, p->nivel, p->defensa,
-          p->fuerza, p->inteligencia, p->velocidad);
+  fprintf(archivo, "%s;%i;%i;%i;%i;%i\n", p->nombre, p->nivel, p->defensa, p->fuerza,
+          p->inteligencia, p->velocidad);
   return true;
 }
 
@@ -70,6 +71,7 @@ entrenador_t *entrenador_crear(const char *nombre, int victorias) {
 
   entrenador->nombre = duplicar_str(nombre);
   entrenador->victorias = victorias;
+  entrenador->ultimoId = 0;
   entrenador->pokemones = hash_crear(destruir_pokemon, 10);
   if (!entrenador->pokemones) {
     free(entrenador);
@@ -80,8 +82,8 @@ entrenador_t *entrenador_crear(const char *nombre, int victorias) {
 };
 
 int entrenador_insertar_pokemon(entrenador_t *entrenador, const char *nombre,
-                                int nivel, int fuerza, int inteligencia,
-                                int velocidad, int defensa) {
+                                int nivel, int defensa, int fuerza, int inteligencia,
+                                int velocidad) {
   if (!entrenador || !nombre)
     return ERROR;
 
@@ -89,19 +91,29 @@ int entrenador_insertar_pokemon(entrenador_t *entrenador, const char *nombre,
   if (!nuevo_pokemon)
     return ERROR;
 
-  nuevo_pokemon->orden = hash_cantidad(entrenador->pokemones) + 1;
+
+  nuevo_pokemon->orden = entrenador->ultimoId;
   nuevo_pokemon->nombre = duplicar_str(nombre);
   nuevo_pokemon->nivel = nivel;
+  nuevo_pokemon->defensa = defensa;
   nuevo_pokemon->fuerza = fuerza;
   nuevo_pokemon->inteligencia = inteligencia;
   nuevo_pokemon->velocidad = velocidad;
-  nuevo_pokemon->defensa = defensa;
-
+  entrenador->ultimoId++;
   int resultado = hash_insertar(entrenador->pokemones, nombre, nuevo_pokemon);
   if (resultado == ERROR) {
     free(nuevo_pokemon);
     return ERROR;
   }
+  printf("Nuevo Pokemon de %s: %s,%i,%i,%i,%i,%i, id:%zu\n",
+         entrenador->nombre,
+         nombre,
+         nivel,
+         defensa,
+         fuerza,
+         inteligencia,
+         velocidad,
+         entrenador->ultimoId);
 
   return EXITO;
 };
@@ -109,6 +121,7 @@ int entrenador_insertar_pokemon(entrenador_t *entrenador, const char *nombre,
 int entrenador_quitar_pokemon(entrenador_t *entrenador, const char *nombre) {
   if (!entrenador || !nombre || entrenador_cantidad_pokemones(entrenador) <= 1)
     return ERROR;
+  printf("Pokemon borrar: %s\n", nombre);
   int resultado = hash_quitar(entrenador->pokemones, nombre);
   return resultado;
 };
@@ -144,6 +157,7 @@ int comparador_por_orden(void *pokemon1, void *pokemon2) {
 // TODO documentar funciones auxiliares
 bool insertar_abb_desde_hash(hash_t *hash, const char *clave, void *abb) {
   pokemon_t *pokemon = hash_obtener(hash, clave);
+  printf("pokemon->orden %lu\n",pokemon->orden);
   int resultado = arbol_insertar((abb_t *)abb, pokemon);
   if (resultado == ERROR)
     return true;
@@ -161,6 +175,7 @@ lista_t *entrenador_lista_ordenada_pokemones(entrenador_t *entrenador,
   abb_t *arbol_pokemones;
   arbol_pokemones = arbol_crear(comparador_por_orden, NULL);
 
+  printf("hash a abb\n");
   size_t cantidad_arbol = hash_con_cada_clave(
       entrenador->pokemones, insertar_abb_desde_hash, arbol_pokemones);
 
@@ -169,7 +184,6 @@ lista_t *entrenador_lista_ordenada_pokemones(entrenador_t *entrenador,
     return NO_EXISTE;
   }
 
-  // TODO: Usar tda lista
   pokemon_t **array_pokemones[cantidad];
   size_t cantidad_recorrida = arbol_recorrido_inorden(
       arbol_pokemones, (void **)array_pokemones, cantidad);
@@ -186,7 +200,7 @@ lista_t *entrenador_lista_ordenada_pokemones(entrenador_t *entrenador,
     return NO_EXISTE;
 
   for (int i = 0; i < cantidad; i++) {
-    int resultado = lista_apilar(lista_pokemones, array_pokemones[i]);
+    int resultado = lista_encolar(lista_pokemones, array_pokemones[i]);
     if (resultado == ERROR) {
       lista_destruir(lista_pokemones);
       return NO_EXISTE;
@@ -207,15 +221,51 @@ void entrenador_destruir(entrenador_t *entrenador) {
 /*
 ** Recibe un entrenador y devuelve la cantidad de victorias
 */
-int entrenador_victorias(entrenador_t*entrenador){
-  if (!entrenador)return -1;
+int entrenador_victorias(entrenador_t *entrenador) {
+  if (!entrenador)
+    return -1;
   return entrenador->victorias;
 }
 
 /*
 ** Recibe un entrenador y devuelve su nombre
 */
-const char * entrenador_nombre(entrenador_t*entrenador){
-  if (!entrenador)return NULL;
+const char *entrenador_nombre(entrenador_t *entrenador) {
+  if (!entrenador)
+    return NULL;
   return entrenador->nombre;
+}
+
+hash_t *entrenador_pokemon_a_hash(pokemon_t *pokemon) {
+  if (!pokemon)
+    return NO_EXISTE;
+  hash_t *pokemon_hash = hash_crear(NO_EXISTE, 10);
+  if (!pokemon_hash)
+    return NO_EXISTE;
+
+  hash_insertar(pokemon_hash, "nombre", (void *)pokemon->nombre);
+  hash_insertar(pokemon_hash, "nivel", (void *)&pokemon->nivel);
+  hash_insertar(pokemon_hash, "defensa", (void *)&pokemon->defensa);
+  hash_insertar(pokemon_hash, "fuerza", (void *)&pokemon->fuerza);
+  hash_insertar(pokemon_hash, "inteligencia", (void *)&pokemon->inteligencia);
+  hash_insertar(pokemon_hash, "velocidad", (void *)&pokemon->velocidad);
+  hash_insertar(pokemon_hash, "orden", (void *)&pokemon->orden);
+
+  return pokemon_hash;
+}
+
+/*
+** Recibe un entrenador y el nombre de su pokemon, devuelve un hash con los
+*atributos del pokemon o NULL en caso de error
+*/
+hash_t *entrenador_pokemon_atributos(entrenador_t *entrenador,
+                                     const char *nombre_pokemon) {
+  if (!entrenador)
+    return NO_EXISTE;
+  pokemon_t *pokemon = entrenador_buscar_pokemon(entrenador, nombre_pokemon);
+  if (!pokemon)
+    return NO_EXISTE;
+  hash_t *pokemon_hash = entrenador_pokemon_a_hash(pokemon);
+
+  return pokemon_hash;
 }

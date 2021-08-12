@@ -3,7 +3,6 @@
 #include "src/lista.h"
 #include "src/salon.h"
 #include "src/util.h"
-#include "tdas/tda_hash/hash.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -209,6 +208,42 @@ void DadoEntrenadorYCantidad_CuandoIntentoObtenerLista_EntoncesObtengoListaConPo
 
   entrenador_destruir(entrenador);
 }
+// Pokemon hash
+void DadoEntrenadorNULLOPokemonInvalido_CuandoIntentoObtenerHashConPokemon_EntoncesObtengoNULL() {
+  entrenador_t *entrenador = entrenador_crear("entrenador", 1);
+  hash_t *pokemon1 = entrenador_pokemon_atributos(NULL, "pokemon1");
+  hash_t *pokemon2 = entrenador_pokemon_atributos(entrenador, "pokemon1");
+
+  pa2m_afirmar(hash_obtener(pokemon1, "nombre") == NO_EXISTE,
+               "Si no se pasa un entrendor se obtiene NULL");
+  pa2m_afirmar(hash_obtener(pokemon2, "nombre") == NO_EXISTE,
+               "Si no se encuentra pokemon se obtiene NULL");
+
+  entrenador_destruir(entrenador);
+}
+
+void DadoEntrenadorYPokemon_CuandoIntentoObtenerHash_EntoncesObtengoHashConPokemon() {
+  entrenador_t *entrenador = entrenador_crear("entrenador", 1);
+  entrenador_insertar_pokemon(entrenador, "Pokemon1", 3, 1, 1, 1, 1);
+
+  hash_t *pokemon = entrenador_pokemon_atributos(entrenador, "Pokemon1");
+
+  pa2m_afirmar(strcmp(hash_obtener(pokemon, "nombre"), "Pokemon1") == 0,
+               "Se encontro el nombre");
+  pa2m_afirmar(*(int *)hash_obtener(pokemon, "nivel") == 3,
+               "Se encontro el nivel");
+  pa2m_afirmar(*(int *)hash_obtener(pokemon, "fuerza") == 1,
+               "Se encontro la fuerza");
+  pa2m_afirmar(*(int *)hash_obtener(pokemon, "inteligencia") == 1,
+               "Se encontro la inteligencia");
+  pa2m_afirmar(*(int *)hash_obtener(pokemon, "velocidad") == 1,
+               "Se encontro la velocidad");
+  pa2m_afirmar(*(int *)hash_obtener(pokemon, "defensa") == 1,
+               "Se encontro la defensa");
+
+  hash_destruir(pokemon);
+  entrenador_destruir(entrenador);
+}
 
 // Utils
 // split
@@ -312,6 +347,7 @@ void DadoUnArchivoConSalonInvalido_CuandoIntentoLeerArchivo_EntoncesObtengoNULL(
       salon_leer_archivo("archivos_pruebas/salon_entrenador_sin_pokemones.csv");
   salon_t *salon3 = salon_leer_archivo("archivos_pruebas/salon_invalido1.csv");
   salon_t *salon4 = salon_leer_archivo("archivos_pruebas/salon_invalido2.csv");
+  salon_t *salon5 = salon_leer_archivo("archivos_pruebas/salon_entrenador_duplicado.csv");
 
   pa2m_afirmar(salon1 == NO_EXISTE,
                "Si paso un salon existente pero vacio obtengo error");
@@ -319,6 +355,8 @@ void DadoUnArchivoConSalonInvalido_CuandoIntentoLeerArchivo_EntoncesObtengoNULL(
                                     "entrenadores sin pokemones obtengo error");
   pa2m_afirmar(salon3 == NO_EXISTE, "Si paso un salon con formato invalido[1]");
   pa2m_afirmar(salon4 == NO_EXISTE, "Si paso un salon con formato invalido[2]");
+  pa2m_afirmar(salon5 == NO_EXISTE, "Si paso un salon con entrenador duplicado no se puede leer salon");
+  /* salon_destruir(salon5); */
 }
 
 void DadoUnArchivoExistente_CuandoIntentoLeerArchivo_EntoncesNoObtengoNULL() {
@@ -482,6 +520,16 @@ void DadoUnSalonYComandoNoExistente_CuandoIntentoEjecutarComando_EntoncesObtengo
   salon_destruir(salon);
 }
 
+struct _salon_t {
+  abb_t *entrenadores;
+};
+
+typedef struct _entrenador_t {
+  const char *nombre;
+  int victorias;
+  hash_t *pokemones;
+} entrenador_t;
+
 /* "ENTRENADORES" */
 /* Respuesta :entrenador,victorias */
 /* "ENTRENADORES:victorias,n" */
@@ -491,60 +539,103 @@ void DadoUnSalonYComandoNoExistente_CuandoIntentoEjecutarComando_EntoncesObtengo
 void testear_commando_entrenador(salon_t *salon) {
   // Que pasa si pongo apenas entrenador
   char *resultado1 = salon_ejecutar_comando(salon, "ENTRENADORES");
+
+  pa2m_afirmar(resultado1, "Existe resultado");
   pa2m_afirmar(resultado1 &&
                    strcmp(resultado1, "entrenador1,33\nentrenador2,38\n") == 0,
                "El resultado obtenido al buscar entrenadores coincide [1]");
+  free(resultado1);
+
   char *resultado2 = salon_ejecutar_comando(salon, "ENTRENADORES:");
-  pa2m_afirmar(resultado2 ==NULL,
+  pa2m_afirmar(resultado2 == NO_EXISTE,
                "Se paso un comando con formato incorrecto");
+
   // Que pasa si pongo entrenador y victorias
   char *resultado3 = salon_ejecutar_comando(salon, "ENTRENADORES:victorias,35");
   pa2m_afirmar(
-      resultado3 && strcmp(resultado3, "entrenador2,38\n") == 0,
+      resultado3 && strcmp(resultado3, "entrenador2\n") == 0,
       "El resultado obtenido al filtrar entrendor por victorias coincide [1]");
+  free(resultado3);
+
   char *resultado4 = salon_ejecutar_comando(salon, "ENTRENADORES:victorias,33");
   pa2m_afirmar(
-      resultado4 && strcmp(resultado4, "entrenador1,33\nentrenador2,38\n") == 0,
+      resultado4 && strcmp(resultado4, "entrenador1\nentrenador2\n") == 0,
       "El resultado obtenido al filtrar entrendor por victorias coincide [2]");
+  free(resultado4);
+
   // Que pasa si las victorias no es un numero
-  char *resultado5 = salon_ejecutar_comando(salon, "ENTRENADORES:victorias,hola");
-  pa2m_afirmar(resultado5  == NO_EXISTE,
+  char *resultado5 =
+      salon_ejecutar_comando(salon, "ENTRENADORES:victorias,hola");
+  pa2m_afirmar(resultado5 == NO_EXISTE,
                "Si no se pasa un numero al filtrar por victoria se devuelve "
-               "string vacio");
+               "null");
+
+
   // Que pasa si no encuentra entrenador con cantidad de victorias
-  char *resultado6 = salon_ejecutar_comando(salon, "ENTRENADORES:victorias,100");
-  pa2m_afirmar(resultado6  == NO_EXISTE,
+  char *resultado6 =
+      salon_ejecutar_comando(salon, "ENTRENADORES:victorias,100");
+  pa2m_afirmar(resultado6 && strcmp(resultado6,"")==0,
                "Si no se encuentra ningun entrenador al hacer filtrado de "
                "devuelve string vacio");
+  free(resultado6);
+
   // Que pasa si busco entrenador con pokemon
   char *resultado7 =
       salon_ejecutar_comando(salon, "ENTRENADORES:pokemon,pokemon1");
-  pa2m_afirmar(resultado7 && strcmp(resultado7, "entrenador1,33\n") == 0,
+  pa2m_afirmar(resultado7 && strcmp(resultado7, "entrenador1\n") == 0,
                "El resultado de un filtrado por pokemon coincide");
+  free(resultado7);
+
   // Que pasa si busco entrenador con pokemon y no paso nombre
   char *resultado8 = salon_ejecutar_comando(salon, "ENTRENADORES:pokemon");
   pa2m_afirmar(
-      resultado8  == NO_EXISTE,
-      "Si no se pasa nombre de pokemon entonces se devuelve un string vacio");
+      resultado8 == NO_EXISTE,
+      "Si no se pasa nombre de pokemon entonces se devuelve NULL");
+
   // Que pasa si no encutra entrenador con pokemon
   char *resultado9 =
       salon_ejecutar_comando(salon, "ENTRENADORES:pokemon,pokemonNoExiste");
-  pa2m_afirmar(resultado9 == NO_EXISTE,
+  pa2m_afirmar(resultado9 && strcmp(resultado9, "") ==0,
                "Si no se encuentra entrenador con pokemon pasado se devuelve "
-               "NULL");
+               "string vacio");
+  free(resultado9);
 }
 
 /* "EQUIPO:nombre" */
 /* Respuesta: nombre,nivel,defensa,fuerza,inteligencia,velocidad */
 void testear_commando_equipo(salon_t *salon) {
   // Que pasa si encuentra entrenador con ese nombre
+  char *resultado1 = salon_ejecutar_comando(salon, "EQUIPO:entrenador1");
+  pa2m_afirmar(
+      resultado1 &&
+          strcmp(resultado1, "pokemon1,1,2,3,4,5\npokemon2,5,4,3,2,1\n") == 0,
+      "El resultado coincide");
+  printf("%s",resultado1);
+  free(resultado1);
   // Que pasa si no encuentra entrenado con ese nombre
+  char *resultado2 = salon_ejecutar_comando(salon, "EQUIPO:entrenador1000");
+  pa2m_afirmar(resultado2 == NO_EXISTE,
+               "No se encontro entrenador entonces se devuelve null");
 }
 
 /* "REGLAS" */
 /* Respuesta: nombre,descripción */
 void testear_commando_reglas(salon_t *salon) {
   // Que pasa si podo este comando
+  char *resultado = salon_ejecutar_comando(salon, "REGLAS");
+  pa2m_afirmar(resultado, "Resultado existe");
+  pa2m_afirmar(
+      resultado &&
+          strcmp(resultado,
+                 "CLASICO,Aplica esta formula (0,8*nivel + fuerza + "
+                 "2*velocidad) para calcular el pokemon ganador\n"
+                 "MODERNO,Aplica esta formula (0,5*nivel + 0,9*defensa + "
+                 "3*inteligencia) para calcular el pokemon ganador\n"
+                 "ESTRATEGA,Gana el pokemon mas inteligente\n"
+                 "MAYOR_NOMBRE,Gana el pokemon con mayor nombre\n"
+                 "FUERZA_BRUTA,Gana el pokemon mas fuerte\n") == 0,
+      "El resultado coincide");
+  free(resultado);
 }
 
 /* "COMPARAR:entrenador1,entrenador2,nombreregla" */
@@ -552,8 +643,42 @@ void testear_commando_reglas(salon_t *salon) {
  * del segundo entrenador */
 void testear_commando_comparar(salon_t *salon) {
   // Que pasa si paso una regla inexistente
+  char *resultado1 = salon_ejecutar_comando(
+      salon, "COMPARAR:entrenador1,entrenador2,reglaInexistente");
+  pa2m_afirmar(
+      resultado1 == NO_EXISTE,
+      "Si no existe la regla pasada entonces no se puede comparar pokemones");
+
   // Que pasa si poso un entrenador inexistente
+  char *resultado2 = salon_ejecutar_comando(
+      salon, "COMPARAR:entrenador1,entrenador10,CLASICO");
+  pa2m_afirmar(
+      resultado2 == NO_EXISTE,
+      "Si no existe entrenador pasado entonces no se puede comparar pokemones");
+
   // Que pasa si paso entrenadores validos y regla valida
+  char *resultado3 =
+      salon_ejecutar_comando(salon, "COMPARAR:entrenador1,entrenador2,CLASICO");
+  printf("Comparar Clasico: %s",resultado3);
+  pa2m_afirmar(resultado3, "Resultado existe");
+  free(resultado3);
+  char *resultado4 =
+      salon_ejecutar_comando(salon, "COMPARAR:entrenador1,entrenador2,MODERNO");
+  printf("Comparar Moderno: %s",resultado4);
+  pa2m_afirmar(resultado4, "Resultado existe");
+  free(resultado4);
+  char *resultado5 = salon_ejecutar_comando(
+      salon, "COMPARAR:entrenador1,entrenador2,ESTRATEGA");
+  pa2m_afirmar(resultado5, "Resultado existe");
+  free(resultado5);
+  char *resultado6 = salon_ejecutar_comando(
+      salon, "COMPARAR:entrenador1,entrenador2,FUERZA_BRUTA");
+  pa2m_afirmar(resultado6, "Resultado existe");
+  free(resultado6);
+  char *resultado7 = salon_ejecutar_comando(
+      salon, "COMPARAR:entrenador1,entrenador2,MAYOR_NOMBRE");
+  pa2m_afirmar(resultado7, "Resultado existe");
+  free(resultado7);
 }
 
 /* "AGREGAR_POKEMON:nombre-entrenador,nombre-pokemon,nivel,defensa,fuerza,inteligencia,velocidad"
@@ -561,22 +686,61 @@ void testear_commando_comparar(salon_t *salon) {
 /* Respuesta: OK */
 void testear_commando_agregar_pokemon(salon_t *salon) {
   // Que pasa si paso entrenador invalido
+  char *resultado1 = salon_ejecutar_comando(
+      salon, "AGREGAR_POKEMON:entrenador5,pokemon3,1,2,3,4,5");
+  pa2m_afirmar(
+      resultado1 == NO_EXISTE,
+      "Si el entrenador no existe en el salon no se le puede agregar pokemon");
   // Que pasa si los stats del pokemon no son numeros
+  char *resultado2 = salon_ejecutar_comando(
+      salon, "AGREGAR_POKEMON:entrenador1,pokemon3,hola,2,3,4,5");
+  pa2m_afirmar(resultado2 == NO_EXISTE,
+               "Si los atributos de pokemon no son numero no se puede agregar "
+               "pokemon a entrenador");
   // Que pasa si poso entrenador y pokemon validos
+  char *resultado3 = salon_ejecutar_comando(
+      salon, "AGREGAR_POKEMON:entrenador1,pokemon3,1,2,3,4,5");
+  pa2m_afirmar(resultado3 && strcmp(resultado3, "OK\n") == 0,
+               "La respuesta corresponde");
+  free(resultado3);
 }
 
 /* "QUITAR_POKEMON:nombre-entrenador,nombre-pokemon" */
 /* Respuesta: OK */
 void testear_commando_quitar_pokemon(salon_t *salon) {
   // Que pasa si paso entrenador invalido
+  char *resultado1 =
+      salon_ejecutar_comando(salon, "QUITAR_POKEMON:entrenador5,pokemon1");
+  pa2m_afirmar(
+      resultado1 == NO_EXISTE,
+      "Si el entrenador no existe en el salon no se le puede quitar pokemon");
   // Que pasa si paso pokemon invalido
+  char *resultado2 =
+      salon_ejecutar_comando(salon, "QUITAR_POKEMON:entrenador1,pokemon5");
+  pa2m_afirmar(resultado2 == NO_EXISTE,
+               "No se encontro pokemon pasado en entrenador");
   // Que pasa si paso entrenador y pokemon validos
+  char *resultado3 =
+      salon_ejecutar_comando(salon, "QUITAR_POKEMON:entrenador1,pokemon3");
+  pa2m_afirmar(resultado3 && strcmp(resultado3, "OK\n") == 0,
+               "La respuesta corresponde");
+  free(resultado3);
 }
 
 /* "GUARDAR:nombre-archivo" */
 /* Respuesta: OK */
 void testear_commando_guardar(salon_t *salon) {
+  // Que pasa si no paso archivo
+  char *resultado1 = salon_ejecutar_comando(salon, "GUARDAR:");
+  pa2m_afirmar(resultado1 == NO_EXISTE,
+               "Si no se pasa archivo no se puede guardar");
   // Que pasa llamo comando
+  printf("puebas 2\n");
+  char *resultado2 = salon_ejecutar_comando(
+      salon, "GUARDAR:archivos_pruebas/guardado_con_comando.csv");
+  pa2m_afirmar(resultado2 && strcmp(resultado2, "OK\n") == 0,
+               "La respuesta corresponde");
+  free(resultado2);
 }
 
 void DadoUnSalonYComandoValido_CuandoIntentoEjecutarComando_EntonceObtengoCharDeseado() {
@@ -625,6 +789,10 @@ int main() {
   pa2m_nuevo_grupo("Entrenador Listar");
   DadoEntrenadorNULL_CuandoIntentoObtenerLista_EntoncesObtengoNULL();
   DadoEntrenadorYCantidad_CuandoIntentoObtenerLista_EntoncesObtengoListaConPokemones();
+
+  pa2m_nuevo_grupo("Entrenador pokemon hash");
+  DadoEntrenadorNULLOPokemonInvalido_CuandoIntentoObtenerHashConPokemon_EntoncesObtengoNULL();
+  DadoEntrenadorYPokemon_CuandoIntentoObtenerHash_EntoncesObtengoHashConPokemon();
 
   pa2m_nuevo_grupo("Utils");
   DadoUnStringInvalido_CuandoIntentoSepararEnLista_EntoncesObtengoNULL();
