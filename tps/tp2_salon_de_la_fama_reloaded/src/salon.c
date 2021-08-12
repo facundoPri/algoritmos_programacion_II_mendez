@@ -9,8 +9,12 @@
 #include <stdio.h>
 #include <string.h>
 
+// Defines
+
 #define ENTRENADOR 2
 #define POKEMON 6
+
+// Estructuras
 
 static hash_t *comandos_hash = NULL;
 static hash_t *reglas_hash = NULL;
@@ -28,6 +32,8 @@ typedef struct regla {
 struct _salon_t {
   abb_t *entrenadores;
 };
+
+// Funciones auxiliares
 
 int comparador_entrenadores_abb(void *entrenador1, void *entrenador2) {
   return entrenador_comparador((entrenador_t *)entrenador1,
@@ -199,13 +205,6 @@ bool entrenador_tiene_pokemon(entrenador_t *entrenador, void *pokemon) {
   return false;
 }
 
-bool print_listas(void *elemento, void *contexto) {
-  contexto = contexto;
-  printf("%s\n", (char *)elemento);
-
-  return true;
-}
-
 char *juntar_entrenadores(lista_t *entrenadores, bool mostrar_victorias) {
   if (!entrenadores)
     return NULL;
@@ -247,17 +246,14 @@ char *juntar_entrenadores(lista_t *entrenadores, bool mostrar_victorias) {
   return string_final;
 }
 
-bool print_entrenador(void *entrenador, void *contexto) {
-  contexto = contexto;
-  printf("%s,%d\n", entrenador_nombre(entrenador),
-         entrenador_victorias(entrenador));
-  return true;
-}
-
 char *ejecutar_comando_entrenador(const char *parametros, salon_t *salon) {
   if (!salon)
     return NULL;
   lista_t *parametros_elementos = split(parametros, ',');
+  if (lista_elementos(parametros_elementos)>2){
+    destruir_lista_split(parametros_elementos);
+    return NULL;
+  }
   char *primer_parametro = lista_elemento_en_posicion(parametros_elementos, 0);
   char *segundo_parametro = lista_elemento_en_posicion(parametros_elementos, 1);
   lista_t *entrenadores = NULL;
@@ -332,23 +328,6 @@ char *juntar_pokemones(lista_t *pokemones) {
   return string_final;
 }
 
-bool print_pokemon(void* pokemon, void*contexto){
-  contexto = contexto;
-  hash_t * hash_pokemon = entrenador_pokemon_a_hash((pokemon_t * )pokemon);
-
-  printf("Pokemon: %s,%i,%i,%i,%i,%i,orden:%i\n",
-         (char *)hash_obtener(hash_pokemon, "nombre"),
-         *(int *)hash_obtener(hash_pokemon, "nivel"),
-         *(int *)hash_obtener(hash_pokemon, "defensa"),
-         *(int *)hash_obtener(hash_pokemon, "fuerza"),
-         *(int *)hash_obtener(hash_pokemon, "inteligencia"),
-         *(int *)hash_obtener(hash_pokemon, "velocidad"),
-         *(int *)hash_obtener(hash_pokemon, "orden"));
-
-  hash_destruir(hash_pokemon);
-  return true;
-}
-
 char *ejecutar_comando_equipo(const char *parametros, salon_t *salon) {
   if (!salon)
     return NULL;
@@ -365,7 +344,6 @@ char *ejecutar_comando_equipo(const char *parametros, salon_t *salon) {
   }
 
   if (pokemones) {
-    lista_con_cada_elemento(pokemones, print_pokemon, NULL);
     string_final = juntar_pokemones(pokemones);
   }
   lista_destruir(pokemones);
@@ -406,7 +384,8 @@ char *juntar_reglas(lista_t *reglas) {
 }
 
 char *ejecutar_comando_reglas(const char *parametro, salon_t *salon) {
-  parametro = parametro;
+  if (parametro)
+    return NULL;
   salon = salon;
   if (hash_cantidad(reglas_hash) == 0)
     return NO_EXISTE;
@@ -516,7 +495,7 @@ char *ejecutar_comando_agregar_pokemon(const char *parametros, salon_t *salon) {
   destruir_lista_split(parametros_elementos);
   if (resultado == -1)
     return NO_EXISTE;
-  return duplicar_str("OK\n");
+  return duplicar_str("OK");
 }
 
 char *ejecutar_comando_quitar_pokemon(const char *parametros, salon_t *salon) {
@@ -541,7 +520,7 @@ char *ejecutar_comando_quitar_pokemon(const char *parametros, salon_t *salon) {
   destruir_lista_split(parametros_elementos);
   if (resultado == -1)
     return NO_EXISTE;
-  return duplicar_str("OK\n");
+  return duplicar_str("OK");
 }
 
 char *ejecutar_comando_guardar(const char *nombre_archivo, salon_t *salon) {
@@ -552,7 +531,7 @@ char *ejecutar_comando_guardar(const char *nombre_archivo, salon_t *salon) {
 
   if (resultado == -1)
     return NO_EXISTE;
-  return duplicar_str("OK\n");
+  return duplicar_str("OK");
 }
 
 /*
@@ -585,22 +564,6 @@ int comparador_clasico(pokemon_t *pokemon1, pokemon_t *pokemon2) {
   hash_t *hash_pokemon1 = entrenador_pokemon_a_hash(pokemon1);
   hash_t *hash_pokemon2 = entrenador_pokemon_a_hash(pokemon2);
 
-  printf("Pokemon1: %s,%i,%i,%i,%i,%i\n",
-         (char *)hash_obtener(hash_pokemon1, "nombre"),
-         *(int *)hash_obtener(hash_pokemon1, "nivel"),
-         *(int *)hash_obtener(hash_pokemon1, "defensa"),
-         *(int *)hash_obtener(hash_pokemon1, "fuerza"),
-         *(int *)hash_obtener(hash_pokemon1, "inteligencia"),
-         *(int *)hash_obtener(hash_pokemon1, "velocidad"));
-
-  printf("Pokemon2: %s,%i,%i,%i,%i,%i\n",
-         (char *)hash_obtener(hash_pokemon2, "nombre"),
-         *(int *)hash_obtener(hash_pokemon2, "nivel"),
-         *(int *)hash_obtener(hash_pokemon2, "defensa"),
-         *(int *)hash_obtener(hash_pokemon2, "fuerza"),
-         *(int *)hash_obtener(hash_pokemon2, "inteligencia"),
-         *(int *)hash_obtener(hash_pokemon2, "velocidad"));
-
   double coeficiente_de_batalla_pokemon1 =
       (0.8 * (*(int *)hash_obtener(hash_pokemon1, "nivel")) +
        (*(int *)hash_obtener(hash_pokemon1, "fuerza")) +
@@ -611,15 +574,11 @@ int comparador_clasico(pokemon_t *pokemon1, pokemon_t *pokemon2) {
        (*(int *)hash_obtener(hash_pokemon2, "fuerza")) +
        2 * (*(int *)hash_obtener(hash_pokemon2, "velocidad")));
 
-  printf("coefiente1: %f\n", coeficiente_de_batalla_pokemon1);
-  printf("coefiente2: %f\n", coeficiente_de_batalla_pokemon2);
   hash_destruir(hash_pokemon1);
   hash_destruir(hash_pokemon2);
   if (coeficiente_de_batalla_pokemon1 >= coeficiente_de_batalla_pokemon2) {
-    printf("1\n");
     return 1;
   } else {
-    printf("2\n");
     return 2;
   }
 }
@@ -631,22 +590,6 @@ int comparador_moderno(pokemon_t *pokemon1, pokemon_t *pokemon2) {
   hash_t *hash_pokemon1 = entrenador_pokemon_a_hash(pokemon1);
   hash_t *hash_pokemon2 = entrenador_pokemon_a_hash(pokemon2);
 
-  printf("Pokemon1: %s,%i,%i,%i,%i,%i\n",
-         (char *)hash_obtener(hash_pokemon1, "nombre"),
-         *(int *)hash_obtener(hash_pokemon1, "nivel"),
-         *(int *)hash_obtener(hash_pokemon1, "defensa"),
-         *(int *)hash_obtener(hash_pokemon1, "fuerza"),
-         *(int *)hash_obtener(hash_pokemon1, "inteligencia"),
-         *(int *)hash_obtener(hash_pokemon1, "velocidad"));
-
-  printf("Pokemon2: %s,%i,%i,%i,%i,%i\n",
-         (char *)hash_obtener(hash_pokemon2, "nombre"),
-         *(int *)hash_obtener(hash_pokemon2, "nivel"),
-         *(int *)hash_obtener(hash_pokemon2, "defensa"),
-         *(int *)hash_obtener(hash_pokemon2, "fuerza"),
-         *(int *)hash_obtener(hash_pokemon2, "inteligencia"),
-         *(int *)hash_obtener(hash_pokemon2, "velocidad"));
-
   double coeficiente_de_batalla_pokemon1 =
       (0.5 * (*(int *)hash_obtener(hash_pokemon1, "nivel")) +
        0.9 * (*(int *)hash_obtener(hash_pokemon1, "defensa")) +
@@ -657,15 +600,11 @@ int comparador_moderno(pokemon_t *pokemon1, pokemon_t *pokemon2) {
        0.9 * (*(int *)hash_obtener(hash_pokemon2, "defensa")) +
        3 * (*(int *)hash_obtener(hash_pokemon2, "inteligencia")));
 
-  printf("coefiente1: %f\n", coeficiente_de_batalla_pokemon1);
-  printf("coefiente2: %f\n", coeficiente_de_batalla_pokemon2);
   hash_destruir(hash_pokemon1);
   hash_destruir(hash_pokemon2);
   if (coeficiente_de_batalla_pokemon1 >= coeficiente_de_batalla_pokemon2) {
-    printf("1\n");
     return 1;
   } else {
-    printf("2\n");
     return 2;
   }
 }
