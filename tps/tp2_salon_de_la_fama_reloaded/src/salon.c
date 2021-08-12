@@ -22,8 +22,8 @@ typedef char *(*comando_ejecutar_t)(const char *, salon_t *);
 typedef int (*comparador_pokemon)(pokemon_t *, pokemon_t *);
 
 typedef struct regla {
-  char *nombre;
-  char *descripcion;
+  const char *nombre;
+  const char *descripcion;
   comparador_pokemon comparador;
 } regla_t;
 
@@ -32,16 +32,26 @@ struct _salon_t {
 };
 
 // Funciones auxiliares
-
+/**
+ * Funcion comparadora abb, recibe dos entrenadores como punteros void para
+ * ordenarlos en un abb
+ */
 int comparador_entrenadores_abb(void *entrenador1, void *entrenador2) {
   return entrenador_comparador((entrenador_t *)entrenador1,
                                (entrenador_t *)entrenador2);
 }
 
+/**
+ * Funcion destructora abb, recibe un entrenador y libera la memoria
+ */
 void destructor_entrenador_abb(void *entrenador) {
   entrenador_destruir((entrenador_t *)entrenador);
 }
 
+/**
+ * Recibe un salon y el nombre de un entrenador y devuelve un puntero al
+ * entrenador en caso de encontrarlo, caso contrario devuelve null
+ */
 entrenador_t *salon_buscar_entrenador(salon_t *salon,
                                       const char *entrenador_nombre) {
   if (!salon || !salon->entrenadores)
@@ -54,17 +64,19 @@ entrenador_t *salon_buscar_entrenador(salon_t *salon,
   return entrenador;
 }
 
-/*
+/**
  * Recibe la lista con elementos en linea y devuelve un entrenador creado con
  * esa informacion. Devuelve NULL en caso de error.
  */
 entrenador_t *crear_entrenador_con_lista(lista_t *lista_info) {
   if (!lista_info)
     return NO_EXISTE;
+
   char *nombre = lista_elemento_en_posicion(lista_info, 0);
   int victorias = atoi(lista_elemento_en_posicion(lista_info, 1));
   if (victorias == 0)
     return NO_EXISTE;
+
   return entrenador_crear(nombre, victorias);
 }
 
@@ -79,28 +91,21 @@ int insertar_pokemon_con_lista(lista_t *lista_info, entrenador_t *entrenador,
     return ERROR;
   char *nombre = lista_elemento_en_posicion(lista_info, 0);
   int nivel = atoi(lista_elemento_en_posicion(lista_info, 1));
-  if (nivel == 0)
-    return ERROR;
   int defensa = atoi(lista_elemento_en_posicion(lista_info, 2));
-  if (defensa == 0)
-    return ERROR;
   int fuerza = atoi(lista_elemento_en_posicion(lista_info, 3));
-  if (fuerza == 0)
-    return ERROR;
   int inteligencia = atoi(lista_elemento_en_posicion(lista_info, 4));
-  if (inteligencia == 0)
-    return ERROR;
   int velocidad = atoi(lista_elemento_en_posicion(lista_info, 5));
-  if (velocidad == 0)
+
+  if (nivel == 0 || defensa == 0 || fuerza == 0 || inteligencia == 0 ||
+      velocidad == 0)
     return ERROR;
+
   int resultado = entrenador_insertar_pokemon(
       entrenador, nombre, nivel, defensa, fuerza, inteligencia, velocidad);
   (*cantidad_pokemones)++;
   return resultado;
 }
 
-// TODO pensar mejor esta funcion
-// TODO pensar esto con la funcion lista_con_cada_elemento
 /*
  * Recibe un salon y un archivo. Devuelve 0 si pudo almacenar los datos del
  * archivo en el salon o -1 si no.
@@ -123,9 +128,11 @@ int pasar_archivo_a_salon(salon_t *salon, FILE *archivo) {
   for (iterador_archivo_csv = lista_iterador_crear(archivo_salon_lista);
        lista_iterador_tiene_siguiente(iterador_archivo_csv);
        lista_iterador_avanzar(iterador_archivo_csv)) {
+
     lista_t *linea_actual =
         lista_iterador_elemento_actual(iterador_archivo_csv);
     size_t cantidad_elementos = lista_elementos(linea_actual);
+
     if (cantidad_elementos == ENTRENADOR) {
       if (entrenador_actual) {
         if (cantidad_pokemones == 0) {
@@ -134,28 +141,33 @@ int pasar_archivo_a_salon(salon_t *salon, FILE *archivo) {
           return ERROR;
         }
       }
+
       entrenador_actual = crear_entrenador_con_lista(linea_actual);
+
       if (!entrenador_actual ||
           salon_buscar_entrenador(salon,
                                   entrenador_nombre(entrenador_actual))) {
         if (entrenador_actual)
           entrenador_destruir(entrenador_actual);
+
         destruir_csv_lista(archivo_salon_lista);
         lista_iterador_destruir(iterador_archivo_csv);
         return ERROR;
       }
+
       arbol_insertar(salon->entrenadores, entrenador_actual);
       cantidad_pokemones = 0;
     } else if (cantidad_elementos == POKEMON) {
       int resultado = insertar_pokemon_con_lista(
           linea_actual, entrenador_actual, &cantidad_pokemones);
+
       if (resultado == ERROR) {
         destruir_csv_lista(archivo_salon_lista);
         lista_iterador_destruir(iterador_archivo_csv);
         return ERROR;
       }
+
     } else {
-      // ERROR
       destruir_csv_lista(archivo_salon_lista);
       lista_iterador_destruir(iterador_archivo_csv);
       return ERROR;
@@ -187,22 +199,32 @@ bool string_es_numero(char *num) {
   return true;
 }
 
+/**
+ * Recibe un entrenador y la cantidad de victorias, devuelve true si este tiene
+ * mas victorias que las pasada y false caso contrario
+ */
 bool entrenador_tiene_victorias(entrenador_t *entrenador, void *victorias) {
   if (!entrenador || !victorias)
     return false;
-  if (entrenador_victorias(entrenador) >= atoi(victorias))
-    return true;
-  return false;
+  return entrenador_victorias(entrenador) >= atoi(victorias);
 }
 
+/**
+ * Recibe un entrenador y un pokemon, devuelve true si este tiene el pokemon
+ * pasado y false caso lo contrario
+ */
 bool entrenador_tiene_pokemon(entrenador_t *entrenador, void *pokemon) {
   if (!entrenador || !pokemon)
     return false;
-  if (entrenador_buscar_pokemon(entrenador, pokemon))
-    return true;
-  return false;
+  return entrenador_buscar_pokemon(entrenador, pokemon);
 }
 
+/**
+ * Recibe una lista con los entrenadores y un boleano. Si el boleando es true
+ * devuelve una string donde se encuentran los entrenadores pasados con la
+ * cantidad de victorias, caso contrario el string apenas contendra el nombre de
+ * los entrenadores
+ */
 char *juntar_entrenadores(lista_t *entrenadores, bool mostrar_victorias) {
   if (!entrenadores)
     return NULL;
@@ -244,11 +266,14 @@ char *juntar_entrenadores(lista_t *entrenadores, bool mostrar_victorias) {
   return string_final;
 }
 
+/**
+ * Recibe una string con parametros y un salon. Devuelve una string
+ */
 char *ejecutar_comando_entrenador(const char *parametros, salon_t *salon) {
   if (!salon)
     return NULL;
   lista_t *parametros_elementos = split(parametros, ',');
-  if (lista_elementos(parametros_elementos)>2){
+  if (lista_elementos(parametros_elementos) > 2) {
     destruir_lista_split(parametros_elementos);
     return NULL;
   }
@@ -283,6 +308,10 @@ char *ejecutar_comando_entrenador(const char *parametros, salon_t *salon) {
   return string_final;
 }
 
+/**
+ * Recibe una lista de pokemones y devuelve un string con cada uno de los
+ * pokemones y sus atributos
+ */
 char *juntar_pokemones(lista_t *pokemones) {
   if (!pokemones)
     return NULL;
@@ -326,6 +355,9 @@ char *juntar_pokemones(lista_t *pokemones) {
   return string_final;
 }
 
+/**
+ * Recibe una string con parametros y un salon. Devuelve una string
+ */
 char *ejecutar_comando_equipo(const char *parametros, salon_t *salon) {
   if (!salon)
     return NULL;
@@ -349,6 +381,10 @@ char *ejecutar_comando_equipo(const char *parametros, salon_t *salon) {
   return string_final;
 }
 
+/**
+ * Funcion para recorrer hash, recibe el hash, la clave pasada y una lista.
+ * Inserta los valores del hash en la lista y en caso de error devuelve true
+ */
 bool hash_reglas_a_lista(hash_t *hash, const char *clave, void *lista) {
   int resultado = lista_insertar(lista, hash_obtener(hash, clave));
   if (resultado == -1) {
@@ -356,6 +392,11 @@ bool hash_reglas_a_lista(hash_t *hash, const char *clave, void *lista) {
   }
   return false;
 }
+
+/**
+ * Recibe una lista de reglas y devuelve unas string con todas las reglas y sus
+ * descripciones
+ */
 char *juntar_reglas(lista_t *reglas) {
   if (!reglas)
     return NULL;
@@ -381,6 +422,9 @@ char *juntar_reglas(lista_t *reglas) {
   return string_final;
 }
 
+/**
+ * Recibe una string con parametros y un salon. Devuelve una string
+ */
 char *ejecutar_comando_reglas(const char *parametro, salon_t *salon) {
   if (parametro)
     return NULL;
@@ -403,6 +447,9 @@ char *ejecutar_comando_reglas(const char *parametro, salon_t *salon) {
   return string_final;
 }
 
+/**
+ * Recibe una string con parametros y un salon. Devuelve una string
+ */
 char *ejecutar_comando_comparar(const char *parametros, salon_t *salon) {
   if (!salon)
     return NO_EXISTE;
@@ -460,6 +507,9 @@ char *ejecutar_comando_comparar(const char *parametros, salon_t *salon) {
   return string_final;
 }
 
+/**
+ * Recibe una string con parametros y un salon. Devuelve una string
+ */
 char *ejecutar_comando_agregar_pokemon(const char *parametros, salon_t *salon) {
   if (!salon)
     return NO_EXISTE;
@@ -496,6 +546,9 @@ char *ejecutar_comando_agregar_pokemon(const char *parametros, salon_t *salon) {
   return duplicar_str("OK");
 }
 
+/**
+ * Recibe una string con parametros y un salon. Devuelve una string
+ */
 char *ejecutar_comando_quitar_pokemon(const char *parametros, salon_t *salon) {
   if (!salon)
     return NO_EXISTE;
@@ -521,6 +574,9 @@ char *ejecutar_comando_quitar_pokemon(const char *parametros, salon_t *salon) {
   return duplicar_str("OK");
 }
 
+/**
+ * Recibe una string con parametros y un salon. Devuelve una string
+ */
 char *ejecutar_comando_guardar(const char *nombre_archivo, salon_t *salon) {
   if (!salon || !*nombre_archivo)
     return NO_EXISTE;
@@ -532,9 +588,9 @@ char *ejecutar_comando_guardar(const char *nombre_archivo, salon_t *salon) {
   return duplicar_str("OK");
 }
 
-/*
-** Recibe el hash comandos globas y lo inicializa si este no existe
-*/
+/**
+ * Recibe el hash comandos globas y lo inicializa si este no existe
+ */
 int inicializar_comandos(hash_t *comandos) {
   if (comandos)
     return 0;
@@ -554,10 +610,10 @@ int inicializar_comandos(hash_t *comandos) {
   return 0;
 }
 
-/*
-** Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
-*segundo
-*/
+/**
+ * Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
+ * segundo
+ */
 int comparador_clasico(pokemon_t *pokemon1, pokemon_t *pokemon2) {
   hash_t *hash_pokemon1 = entrenador_pokemon_a_hash(pokemon1);
   hash_t *hash_pokemon2 = entrenador_pokemon_a_hash(pokemon2);
@@ -580,10 +636,11 @@ int comparador_clasico(pokemon_t *pokemon1, pokemon_t *pokemon2) {
     return 2;
   }
 }
-/*
-** Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
-*segundo
-*/
+
+/**
+ * Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
+ * segundo
+ */
 int comparador_moderno(pokemon_t *pokemon1, pokemon_t *pokemon2) {
   hash_t *hash_pokemon1 = entrenador_pokemon_a_hash(pokemon1);
   hash_t *hash_pokemon2 = entrenador_pokemon_a_hash(pokemon2);
@@ -606,10 +663,11 @@ int comparador_moderno(pokemon_t *pokemon1, pokemon_t *pokemon2) {
     return 2;
   }
 }
-/*
-** Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
-*segundo
-*/
+
+/**
+ * Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
+ *segundo
+ */
 int comparador_estratega(pokemon_t *pokemon1, pokemon_t *pokemon2) {
   hash_t *hash_pokemon1 = entrenador_pokemon_a_hash(pokemon1);
   hash_t *hash_pokemon2 = entrenador_pokemon_a_hash(pokemon2);
@@ -628,10 +686,11 @@ int comparador_estratega(pokemon_t *pokemon1, pokemon_t *pokemon2) {
     return 2;
   }
 }
-/*
-** Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
-*segundo
-*/
+
+/**
+ * Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
+ * segundo
+ */
 int comparador_mayor_nombre(pokemon_t *pokemon1, pokemon_t *pokemon2) {
   hash_t *hash_pokemon1 = entrenador_pokemon_a_hash(pokemon1);
   hash_t *hash_pokemon2 = entrenador_pokemon_a_hash(pokemon2);
@@ -650,10 +709,10 @@ int comparador_mayor_nombre(pokemon_t *pokemon1, pokemon_t *pokemon2) {
     return 2;
   }
 }
-/*
-** Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
-*segundo
-*/
+/**
+ * Recibe dos pokemones, devuelve 1 si gano el primer pokemon y 2 si gano el
+ * segundo
+ */
 int comparador_fuerza_bruta(pokemon_t *pokemon1, pokemon_t *pokemon2) {
   hash_t *hash_pokemon1 = entrenador_pokemon_a_hash(pokemon1);
   hash_t *hash_pokemon2 = entrenador_pokemon_a_hash(pokemon2);
@@ -673,9 +732,18 @@ int comparador_fuerza_bruta(pokemon_t *pokemon1, pokemon_t *pokemon2) {
   }
 }
 
-/*
-** Recibe el hash reglas globas y lo inicializa si este no existe
-*/
+regla_t *crear_regla(const char *nombre, const char *descripcion,
+                     comparador_pokemon funcion) {
+  regla_t *nueva_regla = calloc(1, sizeof(regla_t));
+  nueva_regla->nombre = nombre;
+  nueva_regla->descripcion = descripcion;
+  nueva_regla->comparador = funcion;
+  return nueva_regla;
+}
+
+/**
+ * Recibe el hash reglas globas y lo inicializa si este no existe
+ */
 int inicializar_reglas(hash_t *reglas) {
   if (reglas)
     return 0;
@@ -683,29 +751,23 @@ int inicializar_reglas(hash_t *reglas) {
   reglas_hash = hash_crear(NULL, 10);
   if (!reglas_hash)
     return -1;
-  regla_t *regla_clasico = calloc(1, sizeof(regla_t));
-  regla_clasico->nombre = "CLASICO";
-  regla_clasico->descripcion = "Aplica esta formula (0,8*nivel + fuerza + "
-                               "2*velocidad) para calcular el pokemon ganador";
-  regla_clasico->comparador = comparador_clasico;
-  regla_t *regla_moderno = calloc(1, sizeof(regla_t));
-  regla_moderno->nombre = "MODERNO";
-  regla_moderno->descripcion =
+  regla_t *regla_clasico =
+      crear_regla("CLASICO",
+                  "Aplica esta formula (0,8*nivel + fuerza + "
+                  "2*velocidad) para calcular el pokemon ganador",
+                  comparador_clasico);
+  regla_t *regla_moderno = crear_regla(
+      "MODERNO",
       "Aplica esta formula (0,5*nivel + 0,9*defensa + 3*inteligencia) para "
-      "calcular el pokemon ganador";
-  regla_moderno->comparador = comparador_moderno;
-  regla_t *regla_estratega = calloc(1, sizeof(regla_t));
-  regla_estratega->nombre = "ESTRATEGA";
-  regla_estratega->descripcion = "Gana el pokemon mas inteligente";
-  regla_estratega->comparador = comparador_estratega;
-  regla_t *regla_mayor_nombre = calloc(1, sizeof(regla_t));
-  regla_mayor_nombre->nombre = "MAYOR_NOMBRE";
-  regla_mayor_nombre->descripcion = "Gana el pokemon con mayor nombre";
-  regla_mayor_nombre->comparador = comparador_mayor_nombre;
-  regla_t *regla_fuerza_bruta = calloc(1, sizeof(regla_t));
-  regla_fuerza_bruta->nombre = "FUERZA_BRUTA";
-  regla_fuerza_bruta->descripcion = "Gana el pokemon mas fuerte";
-  regla_fuerza_bruta->comparador = comparador_fuerza_bruta;
+      "calcular el pokemon ganador",
+      comparador_moderno);
+  regla_t *regla_estratega = crear_regla(
+      "ESTRATEGA", "Gana el pokemon mas inteligente", comparador_estratega);
+  regla_t *regla_mayor_nombre =
+      crear_regla("MAYOR_NOMBRE", "Gana el pokemon con mayor nombre",
+                  comparador_mayor_nombre);
+  regla_t *regla_fuerza_bruta = crear_regla(
+      "FUERZA_BRUTA", "Gana el pokemon mas fuerte", comparador_fuerza_bruta);
 
   hash_insertar(reglas_hash, "CLASICO", regla_clasico);
   hash_insertar(reglas_hash, "MODERNO", regla_moderno);
@@ -772,24 +834,24 @@ int salon_guardar_archivo(salon_t *salon, const char *nombre_archivo) {
 
 salon_t *salon_agregar_entrenador(salon_t *salon, entrenador_t *entrenador) {
   if (!salon || !entrenador || entrenador_cantidad_pokemones(entrenador) == 0)
-    return NULL;
+    return NO_EXISTE;
 
   if (arbol_buscar(salon->entrenadores, entrenador))
-    return NULL;
+    return NO_EXISTE;
   arbol_insertar(salon->entrenadores, entrenador);
 
   return salon;
 }
 
-bool retornar_siempre_false(entrenador_t *entrenador, void *extra) {
-  entrenador = entrenador;
-  extra = extra;
-  return false;
-}
-
+/**
+ * Recibe un entrenador y una lista devuelve false en caso de que pueda agregar
+ * el entrenador a la lista y true caso constrario
+ */
 bool agregar_entrenador_lista(void *entrenador, void *lista) {
-  lista_insertar(lista, entrenador);
-  return false;
+  if (!entrenador || !lista)
+    return true;
+  int resultado = lista_insertar(lista, entrenador);
+  return resultado == ERROR;
 }
 
 lista_t *salon_filtrar_entrenadores(salon_t *salon,
@@ -832,7 +894,6 @@ lista_t *salon_filtrar_entrenadores(salon_t *salon,
   return lista_entrenadores_final;
 }
 
-// TODO implementar join
 char *salon_ejecutar_comando(salon_t *salon, const char *comando) {
   if (!salon || !comando || !*comando)
     return NULL;
