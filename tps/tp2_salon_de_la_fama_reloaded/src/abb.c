@@ -9,6 +9,7 @@ abb_t *arbol_crear(abb_comparador comparador, abb_liberar_elemento destructor) {
   abb_t *arbol = calloc(1, sizeof(abb_t));
   arbol->comparador = comparador;
   arbol->destructor = destructor;
+  arbol->cantidad = 0;
   return arbol;
 }
 
@@ -38,6 +39,7 @@ int arbol_insertar(abb_t *arbol, void *elemento) {
   if (arbol->nodo_raiz == NULL) {
     arbol->nodo_raiz = calloc(1, sizeof(nodo_abb_t));
     arbol->nodo_raiz->elemento = elemento;
+    arbol->cantidad++;
     return 0;
   }
   nodo_abb_t *nuevo_nodo =
@@ -45,6 +47,7 @@ int arbol_insertar(abb_t *arbol, void *elemento) {
   if (!nuevo_nodo)
     return -1;
   nuevo_nodo->elemento = elemento;
+  arbol->cantidad++;
 
   return 0;
 }
@@ -115,6 +118,7 @@ int arbol_borrar(abb_t *arbol, void *elemento) {
     return -1;
   arbol->nodo_raiz = borrar_nodo(arbol->nodo_raiz, elemento, arbol->comparador,
                                  arbol->destructor);
+  arbol->cantidad--;
   return 0;
 }
 
@@ -343,4 +347,9 @@ size_t abb_con_cada_elemento(abb_t *arbol, int recorrido,
     break;
   }
   return recorridos;
+}
+
+size_t abb_cantidad(abb_t *arbol){
+  if (!arbol)return 0;
+  return arbol->cantidad;
 }
