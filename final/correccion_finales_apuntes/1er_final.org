@@ -1,0 +1,77 @@
+#+TITLE: 1er Final
+
+* Heap Teoria
+Heap maximal = arriba mayor
+Heap minimal = arriba menor
+Los nodos estar ordenados de forma vertical
+Es un arbol casi completo, osea que se llena de izquierda a derecha
+    - No hay agujeros, solo el ultimo de la derecha puese estar vacio
+** Operaciones
+- Buscar maximo o minimo es O(1)
+- Insercion, buscamos primer lugar disponible e insertamos ahi
+  + Hacemos sift up si el elemento insertado no coincide con el order vertical
+  + Sift up esta hacer con que suba hasta que este ordenado, intercambiar padre con hijo
+- Eliminar elemento maximo o minimo
+  + Sacamos el elemento arriba de todo
+  + Agarramos el ultimo elemento agregado
+  + Hacemos sift down, el elemento se va undiendo hasta llegar a un lugar estable
+    - Intercabiamos el elemento de arriba con el mayor de sus hijos, asi siempre tenemos el mayor arriba
+** Repesentacion como lista
+           3
+      7            12
+  9      15     20     32
+21 30  17 35  45
+- 3,7,12,9,15,20,32,21,30,17,35,45
+** Armar un heap con un vector
+- Vamos al ultimo nivel completo
+- Hacemos sift down para los elementos del mismo nivel
+  + Si alguno de los hijos del elemento es menos intercambio
+- Hacemos este procedimiento para cada uno de los niveles de arriba
+** Heap sort
+- Necesitamos de un vector ordenado como heap
+- Ahora queremos ordenarlo tambien
+- Vamos a ir sacando el elemento raiz del heap, ya que de esta forma terminaremos sacando de forma ordenada los elementos. Siempre sacaremos el mayor o el menos
+- Este elemento que sacarmos lo cambiamos por el ultimo lugar en el heap y lo deslinkeamos, achicando el heap
+- Esto es O(n log n)
+* Ejercicio 1
+- Explicar heap sort
+- Tenemos un heap, extraigo su elemento raiz, este toma el lugar del ultimo elemento del vector, reacomodo el heap, y extraigo nuevamente, seguir con esto hasta que me quede sin elementos
+- Podemos obtener la posicion de cada uno de los elementos gracias a como deberian estar odenados, de mayor a menor y respetando las condiciones de un arbol casi completo.
+- Como el vector no es heap, trasformarlo a heap, explicando.
+* Ejercicio 2
+- Explicar la complejidad de aplicar busqueda binaria a una lista doblemente enlazada
+- El problema de aplicarlo en una lista enlazada es que obtener cierta pocicion no es O(1), asi que ir a la mitad es algo costoso
+  + Ir a mitar es O(n/2)
+  + Otra mitar es 0(n/4) o 0(3n/4)
+  + Etc
+- Posible solucion:
+  Aplicar un iterador bidireccional, que me permita recorrer respectivamente a la posicion y no siempre partiendo desde el vector inicial
+* Ejercicio 3
+- Identificar un hash
+Era un hash cerrado, y habia que hacer ciertas operaciones y como queda el resultado
+La fucion hash no depende del tamaño de la tabla, asi que una clave siempre va a tener el mismo valor hash, pero varia con el modulo del tamaño
+* Grafos Teoria
+- Arista es el camino vertice es el lugar
+- Grafos dirigidos y grafos no dirigidos
+- Grafos con peso
+- Grafos ciclicos y aciclico
+  + Un ciclo es un recorrido de arista adyacentes que empieza y termina en el mismo lugar
+** Primitivas de tda grafo
+*** Crear
+*** Insertar
+*** Insertar arista
+*** Borrar
+*** Borrar arista
+*** destruir
+** Representaciones
+*** Matriz de adyacencia
+**** Me fijo cuantas aristas concectan cada vertice entre si
+**** Si las aristas tiene peso, pongo el peso en vez de uno
+*** Lista de adyacencia
+**** Se hace una lista simple enlazada con cada uno de los vertices que cada vertice esta conectado
+**** Si tiene peso se le agrega el peso
+*** Matriz de incidencia
+**** Es una matriz aristas X vertice
+**** Para cada arista ponemos un uno para los vertices que conecta
+**** Si esta dirigido, es -1 para la salida y 1 para la llegada
+**** Si tiene peso, la llegada es el peso en vez de 1
